@@ -28,7 +28,9 @@
   }
   ,
   "overrides": {
-    "jwks-rsa>jose": "5.11.1",
-    "jose": "5.11.1"
+    "jwks-rsa": {
+      "jose": "5.10.0"
+    },
+    "jose": "5.10.0"
   }
 }
