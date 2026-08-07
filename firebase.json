@@ -2,4 +2,16 @@
   "firestore": {
     "rules": "firestore.rules"
   }
+  ,
+  "hosting": [
+    {
+      "site": "sket-33fb8",
+      "public": ".next",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    }
+  ]
 }
