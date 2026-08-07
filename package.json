@@ -1,0 +1,29 @@
+{
+  "name": "sket-learning-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "check:fadmin": "node scripts/checkFirebaseAdmin.js",
+    "lint": "next lint",
+    "migrate:passwords": "node scripts/hashPasswords.js",
+    "normalize:user-phones": "node scripts/normalizeUserPhones.js",
+    "set-admin-claim": "node scripts/setAdminClaim.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "firebase": "^12.17.0",
+    "firebase-admin": "^14.2.0",
+    "next": "^15.5.22",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.2",
+    "@types/react": "18.3.4",
+    "@types/react-dom": "18.3.4",
+    "typescript": "5.5.4"
+  }
+}

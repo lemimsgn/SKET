@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.admin == true || request.auth.token.role == 'admin'
+      );
+    }
+
+    // Users collection
+    // - Users create their own document (uid == doc id) and it must start as "pending".
+    // - Users cannot set their own `status` to "approved" or set `role`.
+    // - Admins can read all users and set `status` to "approved".
+    match /users/{userId} {
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.uid == userId
+        && request.resource.data.status == 'pending'
+        // only server-approved values for user creation
+        && request.resource.data.role == 'user'
+        && request.resource.data.walletBalance == 0
+        && request.resource.data.password is string
+        && request.resource.data.password.matches('^\\$2[aby]\\$.+')
+        && request.resource.data.approvedAt == null
+        && request.resource.data.createdAt is timestamp;
+
+      // Owner can update most profile fields but not status/role
+      allow update: if isSignedIn()
+        && request.auth.uid == userId
+        && !(request.resource.data.keys().hasAny(['status', 'role']))
+        && request.resource.data.uid == userId;
+
+      // Allow users to read their own document only when authenticated.
+      allow get: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+
+      // Admins can read/list and approve users
+      allow list: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Withdraw requests created by users, approved by admins.
+    match /withdrawRequests/{reqId} {
+      // User may create a withdraw request only for themselves, amount > 0,
+      // and only if they have enough balance in their `users/{uid}` doc.
+      allow create: if isSignedIn()
+        && request.auth.uid == request.resource.data.userId
+        && request.resource.data.status == 'pending'
+        && (request.resource.data.amount is number)
+        && request.resource.data.amount > 0
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.walletBalance >= request.resource.data.amount;
+
+      // Owner can read their own withdraw requests
+      allow get: if isSignedIn() && request.auth.uid == resource.data.userId;
+      allow list: if isSignedIn() && request.auth.uid == resource.data.userId;
+
+      // Admins can read/list all withdraw requests and update status to approved/rejected
+      allow get, list: if isAdmin();
+      allow update: if isAdmin()
+        && (request.resource.data.status in ['approved', 'rejected'])
+        && (request.resource.data.approvedAt is timestamp || request.resource.data.approvedAt == null);
+
+      // No client-side deletes by users; admins may delete for cleanup
+      allow delete: if isAdmin();
+    }
+
+    // Wallet transactions: only server/admin should write these. Users can read their own transactions.
+    match /walletTransactions/{txId} {
+      allow create: if isAdmin();
+      allow get: if isSignedIn() && (isAdmin() || request.auth.uid == resource.data.userId);
+      allow list: if isSignedIn() && (isAdmin() || request.auth.uid == resource.data.userId);
+      allow delete: if isAdmin();
+    }
+
+    // By default deny everything else.
+  }
+}

@@ -1,0 +1,23 @@
+node_modules/
+.next/
+dist/
+build/
+*.tsbuildinfo
+.env*
+firebase-debug.*
+firestore-debug.log
+*.local
+*.log
+**/*firebase-adminsdk*.json
+.cache/
+/.vscode/
+/.idea/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Ignore OS files
+Thumbs.db
+.DS_Store
