@@ -120,5 +120,8 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/:path*", "/admin/:path*", "/admin"],
+  // Apply middleware to all site pages so security headers (CSP + nonce)
+  // are present on document responses. Exclude Next.js static assets
+  // to avoid interfering with asset delivery.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
