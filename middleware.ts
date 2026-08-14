@@ -13,6 +13,10 @@ const allowedOrigins = (process.env.API_ALLOWED_ORIGINS ?? "")
   .filter(Boolean);
 
 const isDev = process.env.NODE_ENV === "development";
+// Opt-in temporary override to allow inline scripts in production for troubleshooting.
+// Set ALLOW_INLINE_SCRIPTS=true in Vercel Environment Variables only while testing,
+// then remove it and redeploy. Default is secure (no 'unsafe-inline').
+const allowInline = (process.env.ALLOW_INLINE_SCRIPTS || "false").toLowerCase() === "true";
 const cspScriptSrc = isDev ? "'self' 'unsafe-inline' 'unsafe-eval'" : "'self'";
 const cspStyleSrc = isDev ? "'self' 'unsafe-inline'" : "'self'";
 
@@ -70,9 +74,11 @@ function setSecurityHeaders(response: NextResponse): void {
   }
 
   const scriptNonceToken = `'nonce-${nonce}'`;
+  // In production, include the nonce. If `ALLOW_INLINE_SCRIPTS=true` is set,
+  // also include 'unsafe-inline' temporarily to help verify CSP-related blocking.
   const scriptSrc = isDev
     ? `${cspScriptSrc} ${scriptNonceToken}`
-    : `'self' ${scriptNonceToken}`;
+    : `${cspScriptSrc} ${allowInline ? "'unsafe-inline'" : ""} ${scriptNonceToken}`;
 
   const csp = `default-src 'self'; script-src ${scriptSrc}; style-src ${cspStyleSrc}; img-src 'self' data:; connect-src ${firebaseConnectSrc}; font-src 'self'; frame-ancestors 'none'; base-uri 'self';`;
 
