@@ -59,9 +59,34 @@ function setCorsHeaders(response: NextResponse, origin: string): void {
 }
 
 function setSecurityHeaders(response: NextResponse): void {
+  // Generate a per-request nonce for CSP
+  let nonce = "";
+  try {
+    const arr = crypto.getRandomValues(new Uint8Array(16));
+    nonce = Array.from(arr).map((b) => ("0" + b.toString(16)).slice(-2)).join("");
+  } catch (e) {
+    // Fallback to timestamp-based nonce if crypto unavailable
+    nonce = String(Date.now());
+  }
+
+  const scriptNonceToken = `'nonce-${nonce}'`;
+  const scriptSrc = isDev
+    ? `${cspScriptSrc} ${scriptNonceToken}`
+    : `'self' ${scriptNonceToken}`;
+
+  const csp = `default-src 'self'; script-src ${scriptSrc}; style-src ${cspStyleSrc}; img-src 'self' data:; connect-src ${firebaseConnectSrc}; font-src 'self'; frame-ancestors 'none'; base-uri 'self';`;
+
+  // set headers
   Object.entries(securityHeaders).forEach(([key, value]) => {
-    response.headers.set(key, value);
+    if (key === "Content-Security-Policy") {
+      response.headers.set(key, csp);
+    } else {
+      response.headers.set(key, value);
+    }
   });
+
+  // expose nonce to server-rendered pages via a header so head.tsx can read it
+  response.headers.set("x-csp-nonce", nonce);
 }
 
 export function middleware(request: NextRequest) {

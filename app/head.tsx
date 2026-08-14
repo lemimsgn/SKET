@@ -1,9 +1,21 @@
-const isDev = process.env.NODE_ENV === "development";
-const csp = isDev
-  ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.firebaseapp.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; font-src 'self'; frame-ancestors 'none'; base-uri 'self';"
-  : "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.firebaseapp.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; font-src 'self'; frame-ancestors 'none'; base-uri 'self';";
+import { headers } from "next/headers";
 
-export default function Head() {
+const isDev = process.env.NODE_ENV === "development";
+
+export default async function Head() {
+  const hdrs = await headers();
+  // headers() may be a Promise in this Next.js version
+  const nonce = (hdrs as any).get ? (hdrs as any).get("x-csp-nonce") || "" : "";
+
+  const firebaseConnectSrc = isDev
+    ? "'self' https://*.firebaseapp.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com"
+    : "'self' https://*.firebaseapp.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com";
+
+  const scriptNonce = nonce ? `'nonce-${nonce}'` : "'self'";
+  const csp = isDev
+    ? `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' ${scriptNonce}; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src ${firebaseConnectSrc}; font-src 'self'; frame-ancestors 'none'; base-uri 'self';`
+    : `default-src 'self'; script-src 'self' ${scriptNonce}; style-src 'self'; img-src 'self' data:; connect-src ${firebaseConnectSrc}; font-src 'self'; frame-ancestors 'none'; base-uri 'self';`;
+
   return (
     <>
       <meta name="application-name" content="SKET" />
@@ -19,6 +31,11 @@ export default function Head() {
       <link rel="manifest" href="/manifest.json" />
       <link rel="icon" href="/icons/icon-192.png" />
       <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+      {nonce && (
+        // expose nonce to client scripts that may need it
+        // the script itself is small and is rendered with the same nonce
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: `window.__CSP_NONCE='${nonce}';` }} />
+      )}
     </>
   );
 }
