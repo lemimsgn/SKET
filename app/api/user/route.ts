@@ -63,8 +63,10 @@ export async function GET(request: NextRequest) {
         referralNumber: userData.referralNumber || "",
         profileImage: userData.profileImage || "",
         registrationFee: currentRegistrationFee,
+        securityQuestionsExist: Array.isArray(userData.securityQuestions) && (userData.securityQuestions || []).length >= 2,
+        notifications: Array.isArray(userData.notifications) ? userData.notifications : [],
       },
-    }, { headers: { "Cache-Control": "public, max-age=30, s-maxage=60, stale-while-revalidate=120" } });
+    }, { headers: { "Cache-Control": "no-store, must-revalidate" } });
   } catch (error: any) {
     console.error("Error fetching user:", error);
     return NextResponse.json({ error: "Failed to load user." }, { status: 500, headers: { "Cache-Control": "public, max-age=5" } });

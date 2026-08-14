@@ -1,4 +1,4 @@
-const CACHE_NAME = "sket-pwa-cache-v1";
+const CACHE_NAME = "sket-pwa-cache-v2";
 const ASSETS_TO_CACHE = [
   "/",
   "/manifest.json",
@@ -33,6 +33,14 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Listen for skip-waiting message from client to immediately activate new worker
+self.addEventListener("message", (event) => {
+  if (!event.data) return;
+  if (event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -42,17 +50,32 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Network-first for _next assets (avoid serving stale JS/CSS), cache-first for icons/manifest
+  if (url.pathname.startsWith("/_next/")) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // update cache with freshest copy
+          if (response && response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-
       return fetch(request).then((response) => {
         if (!ASSETS_TO_CACHE.includes(url.pathname) || !response || !response.ok || response.type !== "basic") {
           return response;
         }
-
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(request, responseClone);

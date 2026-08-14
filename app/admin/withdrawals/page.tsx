@@ -11,6 +11,7 @@ interface Withdrawal {
   amount?: number;
   bankName?: string;
   accountNumber?: string;
+  accountHolderName?: string;
   referralCode?: string;
   walletBalance?: number;
   requestedAt?: string;
@@ -133,6 +134,7 @@ export default function AdminWithdrawalsPage() {
                 <p className="pending-detail">Wallet: {(request.walletBalance ?? 0).toLocaleString()} ETB</p>
                 <p className="pending-detail">Requested: {(request.amount ?? 0).toLocaleString()} ETB</p>
                 <p className="pending-detail">CBE Account: {request.accountNumber || "—"}</p>
+                <p className="pending-detail">Account holder: {request.accountHolderName || "—"}</p>
                 <p className="pending-detail">Date: {request.requestedAt ? new Date(request.requestedAt).toLocaleString() : "—"}</p>
                 <p className="pending-detail">Status: {request.status || "pending"}</p>
                 {request.rejectionReason && <p className="pending-detail">Reason: {request.rejectionReason}</p>}

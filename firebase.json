@@ -6,7 +6,7 @@
   "hosting": [
     {
       "site": "sket-33fb8",
-      "public": ".next",
+      "public": "public",
       "ignore": [
         "firebase.json",
         "**/.*",

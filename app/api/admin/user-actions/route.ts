@@ -9,13 +9,46 @@ const firebaseAdminInitError = rawFirebaseAdminInitError as Error | null;
 async function removeUserData(userId: string) {
   if (!db) throw new Error("Firebase Admin is not initialized.");
   const userRef = db.collection("users").doc(userId);
-  await db.runTransaction(async (transaction: any) => {
-    const userSnapshot = await transaction.get(userRef);
-    if (!userSnapshot.exists) {
-      throw new Error("User not found.");
+  const userSnapshot = await userRef.get();
+  if (!userSnapshot.exists) {
+    throw new Error("User not found.");
+  }
+
+  const userData = userSnapshot.data() || {};
+  // Determine canonical identifiers to match related documents
+  const phone = String(userData.phone || userId || "").trim();
+  const uid = String(userData.uid || "").trim();
+
+  // Helper to delete query results in batches of 500
+  const deleteQueryBatched = async (collectionName: string, field: string, value: string) => {
+    if (!value) return;
+    if (!db) return;
+    const colRef = db.collection(collectionName as any);
+    while (true) {
+      const snap = await colRef.where(field, "==", value).limit(500).get();
+      if (snap.empty) break;
+      const batch = db.batch();
+      snap.docs.forEach((d) => batch.delete(d.ref));
+      await batch.commit();
+      // continue until none left
     }
-    transaction.delete(userRef);
-  });
+  };
+
+  // Collections and fields to clean that reference this user
+  const cleanupTasks: Array<Promise<void>> = [];
+  cleanupTasks.push(deleteQueryBatched("transactions", "senderPhone", phone));
+  cleanupTasks.push(deleteQueryBatched("transactions", "recipientPhone", phone));
+  cleanupTasks.push(deleteQueryBatched("walletTransactions", "userId", phone));
+  cleanupTasks.push(deleteQueryBatched("walletTransactions", "userId", uid));
+  cleanupTasks.push(deleteQueryBatched("withdrawRequests", "phone", phone));
+  cleanupTasks.push(deleteQueryBatched("withdrawRequests", "userId", phone));
+  cleanupTasks.push(deleteQueryBatched("bannedUsers", "phone", phone));
+
+  // Wait for background deletions to finish
+  await Promise.all(cleanupTasks);
+
+  // Finally, delete the user document itself
+  await userRef.delete();
 }
 
 export async function POST(request: Request) {

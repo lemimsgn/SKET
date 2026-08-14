@@ -74,7 +74,7 @@ export async function POST(request: Request) {
       updatedAt: new Date(),
     });
 
-    return NextResponse.json({ message: "Security questions saved successfully." });
+    return NextResponse.json({ message: "Security questions saved successfully.", securityQuestionsExist: true });
   } catch (error: any) {
     console.error("security-questions save error:", error);
     return NextResponse.json({ error: "Could not save security questions." }, { status: 500 });
