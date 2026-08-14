@@ -44,11 +44,13 @@ export async function POST(request: Request) {
       },
     });
 
+    // Make the admin session cookie available to the admin UI by
+    // setting the path to '/' and SameSite to 'lax'. Keep HttpOnly and Secure.
     response.cookies.set("sket-admin-session", idToken, {
-      path: "/api/admin",
+      path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 60 * 60,
     });
 

@@ -19,11 +19,11 @@ export async function POST(request: Request) {
 
   const response = NextResponse.json({ success: true });
   response.cookies.set("sket-admin-session", "", {
-    path: "/api/admin",
+    path: "/",
     maxAge: 0,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
   });
   return response;
 }
