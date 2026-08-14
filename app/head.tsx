@@ -15,7 +15,7 @@ export default async function Head() {
   const scriptNonce = nonce ? `'nonce-${nonce}'` : "'self'";
   const csp = isDev
     ? `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' ${scriptNonce}; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src ${firebaseConnectSrc}; font-src 'self'; frame-ancestors 'none'; base-uri 'self';`
-    : `default-src 'self'; script-src 'self' ${allowInline ? "'unsafe-inline'" : ""} ${scriptNonce}; style-src 'self'; img-src 'self' data:; connect-src ${firebaseConnectSrc}; font-src 'self'; frame-ancestors 'none'; base-uri 'self';`;
+    : `default-src 'self'; script-src ${scriptNonce} ${allowInline ? "'unsafe-inline' " : ""}'strict-dynamic' https:; style-src 'self'; img-src 'self' data:; connect-src ${firebaseConnectSrc}; font-src 'self'; frame-ancestors 'none'; base-uri 'self';`;
 
   return (
     <>

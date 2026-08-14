@@ -74,11 +74,12 @@ function setSecurityHeaders(response: NextResponse): void {
   }
 
   const scriptNonceToken = `'nonce-${nonce}'`;
-  // In production, include the nonce. If `ALLOW_INLINE_SCRIPTS=true` is set,
-  // also include 'unsafe-inline' temporarily to help verify CSP-related blocking.
+  // In production, include the nonce. Also add 'strict-dynamic' and https:
+  // so that trusted nonced scripts can load their own subresources (Next runtime).
+  // `ALLOW_INLINE_SCRIPTS` is an opt-in for temporary testing only.
   const scriptSrc = isDev
     ? `${cspScriptSrc} ${scriptNonceToken}`
-    : `${cspScriptSrc} ${allowInline ? "'unsafe-inline'" : ""} ${scriptNonceToken}`;
+    : `${cspScriptSrc} ${allowInline ? "'unsafe-inline' " : ""}${scriptNonceToken} 'strict-dynamic' https:`;
 
   const csp = `default-src 'self'; script-src ${scriptSrc}; style-src ${cspStyleSrc}; img-src 'self' data:; connect-src ${firebaseConnectSrc}; font-src 'self'; frame-ancestors 'none'; base-uri 'self';`;
 
