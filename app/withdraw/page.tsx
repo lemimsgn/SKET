@@ -13,6 +13,7 @@ type UserRecord = {
   pendingWithdrawalId?: string | null;
   referralNumber?: string;
   referralCode?: string;
+  securityQuestionsExist?: boolean;
 };
 
 export default function WithdrawPage() {
@@ -131,6 +132,10 @@ export default function WithdrawPage() {
           <div className="status-badge error">
             You already have a pending withdrawal request. Wait until it is approved or rejected before submitting another.
           </div>
+        ) : !user.securityQuestionsExist ? (
+          <div className="status-badge error">
+            You must set your security questions before submitting a withdrawal. Go to Settings and set them first.
+          </div>
         ) : (
           <div className="status-badge success">Your account is approved. You may submit a withdrawal request.</div>
         )}
@@ -183,7 +188,7 @@ export default function WithdrawPage() {
           {error && <div className="status-badge error">{error}</div>}
           {success && <div className="status-badge success">{success}</div>}
 
-          <button className="primary-button" type="submit" disabled={user.status !== "approved" || Boolean(user.pendingWithdrawalId) || loading}>
+          <button className="primary-button" type="submit" disabled={user.status !== "approved" || Boolean(user.pendingWithdrawalId) || loading || !user.securityQuestionsExist}>
             {loading ? "Submitting…" : "Submit Withdrawal Request"}
           </button>
         </form>

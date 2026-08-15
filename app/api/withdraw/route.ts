@@ -49,6 +49,11 @@ export async function POST(request: Request) {
       }
 
       const user = userSnapshot.data() || {};
+      // Ensure security questions are set before allowing withdrawals
+      const hasSecurityQuestions = Array.isArray(user.securityQuestions) && user.securityQuestions.length >= 3;
+      if (!hasSecurityQuestions) {
+        throw new Error("You must set your security questions before requesting a withdrawal.");
+      }
       if (String(user.status || "").toLowerCase() === "locked") {
         throw new Error("Your account is locked. Withdrawals are disabled.");
       }
