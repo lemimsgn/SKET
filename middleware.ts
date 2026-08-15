@@ -86,14 +86,29 @@ function setSecurityHeaders(response: NextResponse): void {
   // set headers
   Object.entries(securityHeaders).forEach(([key, value]) => {
     if (key === "Content-Security-Policy") {
-      response.headers.set(key, csp);
+      // If allowInline is enabled for testing, prefer an inline-friendly CSP
+      // that includes 'unsafe-inline' and omits the nonce so pre-rendered
+      // inline scripts can execute. This is a temporary diagnostic mode
+      // only — remove the flag after verifying the site.
+      if (allowInline) {
+        const inlineCsp = `default-src 'self'; script-src 'self' 'unsafe-inline' ${cspStyleSrc}; style-src ${cspStyleSrc}; img-src 'self' data:; connect-src ${firebaseConnectSrc}; font-src 'self'; frame-ancestors 'none'; base-uri 'self';`;
+        response.headers.set(key, inlineCsp);
+      } else {
+        response.headers.set(key, csp);
+      }
     } else {
       response.headers.set(key, value);
     }
   });
 
-  // expose nonce to server-rendered pages via a header so head.tsx can read it
-  response.headers.set("x-csp-nonce", nonce);
+  // expose nonce to server-rendered pages via a header so head.tsx can read it.
+  // If allowInline=true we DO NOT expose a nonce (clear it) so the head
+  // won't attempt to inject nonced inline scripts.
+  if (allowInline) {
+    response.headers.set("x-csp-nonce", "");
+  } else {
+    response.headers.set("x-csp-nonce", nonce);
+  }
 }
 
 export function middleware(request: NextRequest) {
