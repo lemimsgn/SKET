@@ -681,6 +681,16 @@ export default function DashboardPage() {
                   <button className="modal-close" onClick={() => setChangePasswordOpen(false)}>✕</button>
                 </div>
                 <div className="password-form">
+                  <div className="form-group">
+                    <label htmlFor="currentPassword">Current password</label>
+                    <input
+                      id="currentPassword"
+                      type="password"
+                      placeholder="Enter current password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                    />
+                  </div>
                     <div className="form-group">
                     <label htmlFor="newPassword">New password</label>
                     <input
@@ -711,6 +721,7 @@ export default function DashboardPage() {
                           body: JSON.stringify({
                             phone: user.phone,
                             newPassword,
+                            oldPassword: currentPassword,
                           }),
                         });
                         const data = await response.json();
