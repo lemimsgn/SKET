@@ -1825,29 +1825,23 @@ img {
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0;
-  width: min(50vw, 320px);
   height: 100vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-  touch-action: auto;
-  box-sizing: border-box;
+  width: min(320px, 86%);
   background: #ffffff;
-  box-shadow: 24px 0 60px rgba(15, 23, 42, 0.14);
-  transform: translateX(-110%);
-  transition: transform 0.25s ease;
+  box-shadow: 0 20px 40px rgba(2,6,23,0.2);
+  transform: translateX(-104%);
+  transition: transform 260ms cubic-bezier(.2,.9,.2,1);
   z-index: 20;
-  padding: 24px 18px;
-  display: grid;
-  gap: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .dashboard-shell .drawer-menu {
   background: #0b1220;
   box-shadow: 24px 0 60px rgba(0, 0, 0, 0.45);
   color: #e6eef6;
-  padding: 22px 18px 18px;
 }
 
 .dashboard-shell .drawer-header strong {
@@ -1955,47 +1949,53 @@ img {
 
 .drawer-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  min-height: 46px;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .drawer-links {
   display: grid;
-  gap: 6px;
+  gap: 8px;
+  margin-top: 8px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   max-height: 100%;
-  padding-right: 4px;
+  padding-right: 0;
 }
 
 .drawer-link {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 18px 8px 18px 8px;
-  border-radius: 0;
+  text-align: left;
   background: transparent;
-  color: #111827;
   border: none;
-  transition: all 0.18s ease;
-  font-size: 1.15rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  cursor: pointer;
   line-height: 1.2;
+  color: #111827;
+  transition: background 0.18s ease, color 0.18s ease;
 }
 
 .dashboard-shell .drawer-link {
-  background: transparent;
   color: #e6eef6;
-  border: none;
-  padding: 18px 10px 18px 10px;
+  background: transparent;
 }
 
 .drawer-link:hover,
 .drawer-link.active {
-  background: transparent;
-  border: none;
+  background: rgba(148, 163, 184, 0.12);
+  color: #111827;
+}
+
+.dashboard-shell .drawer-link:hover,
+.dashboard-shell .drawer-link.active {
+  background: rgba(148, 163, 184, 0.12);
   color: #ffffff;
 }
 
