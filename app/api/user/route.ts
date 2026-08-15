@@ -46,6 +46,8 @@ export async function GET(request: NextRequest) {
     const currentRegistrationFee = userData.registrationFee ?? Number(settingsData.registrationFee ?? 3000);
     const currentRegistrationAccountNumber =
       String(userData.registrationAccountNumber || settingsData.accountNumber || "1000686058477").trim();
+    const currentRegistrationTelegramLink =
+      String(userData.registrationTelegramLink || settingsData.registrationTelegramLink || "https://t.me/leonmsgn").trim();
     return NextResponse.json({
       user: {
         id: userResult.snap.id,
@@ -63,6 +65,8 @@ export async function GET(request: NextRequest) {
         referralNumber: userData.referralNumber || "",
         profileImage: userData.profileImage || "",
         registrationFee: currentRegistrationFee,
+        registrationAccountNumber: currentRegistrationAccountNumber,
+        registrationTelegramLink: currentRegistrationTelegramLink,
         securityQuestionsExist: Array.isArray(userData.securityQuestions) && (userData.securityQuestions || []).length >= 2,
         notifications: Array.isArray(userData.notifications) ? userData.notifications : [],
       },

@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AdminSession, getAdminSession, setAdminSession } from "./authClient";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
+  const [admin, setAdmin] = useState<AdminSession | null>(null);
   const [pendingUsers, setPendingUsers] = useState<any[]>([]);
   const [approvedUsers, setApprovedUsers] = useState<any[]>([]);
   const [pendingWithdrawals, setPendingWithdrawals] = useState<any[]>([]);
@@ -14,8 +16,16 @@ export default function AdminDashboardPage() {
   const [todaysRegistrations, setTodaysRegistrations] = useState<number>(0);
 
   useEffect(() => {
-    loadDashboardData();
-  }, []);
+    if (typeof window !== "undefined") {
+      const stored = getAdminSession();
+      if (!stored) {
+        router.replace("/admin/login");
+        return;
+      }
+      setAdmin(stored);
+      loadDashboardData();
+    }
+  }, [router]);
 
   const loadDashboardData = async () => {
     setLoading(true);
@@ -65,12 +75,9 @@ export default function AdminDashboardPage() {
     return response.json();
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/admin/logout", { method: "POST" });
-    } finally {
-      router.push("/admin/login");
-    }
+  const handleLogout = () => {
+    setAdminSession(null);
+    router.push("/admin/login");
   };
 
   const handleApproveUser = async (user: any) => {
@@ -97,6 +104,18 @@ export default function AdminDashboardPage() {
   const pendingCount = pendingUsers?.length ?? 0;
   const totalUsers = approvedCount + pendingCount;
 
+  if (!admin) {
+    return (
+      <main className="page-shell admin-dashboard-shell">
+        <div className="container auth-card">
+          <p className="copy-small">Loading admin dashboard...</p>
+        </div>
+      </main>
+    );
+  }
+
+  const adminDisplayName = admin.email ?? admin.name ?? "Admin";
+
   const summaryCards = [
     { icon: "👥", label: "Total Users", value: totalUsers.toString(), href: "/admin/users" },
     { icon: "🟢", label: "Active Users", value: approvedCount.toString(), href: "/admin/users?status=approved" },
@@ -116,12 +135,12 @@ export default function AdminDashboardPage() {
           <div className="admin-bar-left">
             <div>
               <p className="eyebrow">Admin Dashboard</p>
-              <h1 className="admin-title">Welcome, admin</h1>
+              <h1 className="admin-title">Welcome, {adminDisplayName}</h1>
             </div>
           </div>
           <div className="admin-bar-right">
             <button className="icon-button">🔔</button>
-            <div className="avatar large">A</div>
+            <div className="avatar large">{adminDisplayName.charAt(0).toUpperCase()}</div>
           </div>
         </header>
 
