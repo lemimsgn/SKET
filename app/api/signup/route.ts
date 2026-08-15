@@ -148,16 +148,22 @@ export async function POST(request: Request) {
         approvedAt: null,
         lastLogin: null,
       });
+    });
 
-      if (inviterRef && inviter) {
+    // Notify inviter outside of the transaction so notification failures
+    // don't abort the signup. This keeps the user creation robust.
+    if (inviterRef) {
+      try {
         await appendNotification(inviterRef, {
           type: "referral",
           message: `${firstName} ${lastName} joined using your referral number. Their account is pending approval.`,
           createdAt: new Date(),
           read: false,
-        }, 100, transaction);
+        }, 100);
+      } catch (e) {
+        console.warn("appendNotification (post-signup) failed:", e);
       }
-    });
+    }
 
     await recordSuccess("auth:signup", ip, phone);
     return NextResponse.json({ success: true, phone });
