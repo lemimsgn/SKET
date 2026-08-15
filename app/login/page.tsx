@@ -198,6 +198,11 @@ export default function LoginPage() {
   return (
     <main className="page-shell">
       <div className="container auth-card">
+        <div style={{ marginBottom: 12 }}>
+          <Link href="/" className="secondary-button small">
+            Back
+          </Link>
+        </div>
         <div className="section-head">
           <h1 className="section-title">{loginTitle}</h1>
           <p className="copy-small">{loginDescription}</p>
@@ -245,6 +250,9 @@ export default function LoginPage() {
               <button type="button" className="secondary-button small-action" onClick={handleForgotPasswordStart}>
                 Forgot password
               </button>
+            </p>
+            <p className="copy-small" style={{ marginTop: 12 }}>
+              Don't have an account? <Link href="/signup" className="secondary-button small-action">Sign up</Link>
             </p>
           </>
         )}
@@ -323,6 +331,9 @@ export default function LoginPage() {
               Back to login
             </button>
           </div>
+          <p className="copy-small" style={{ marginTop: 12 }}>
+            Don't have an account? <Link href="/signup" className="secondary-button small-action">Sign up</Link>
+          </p>
         )}
       </div>
     </main>
