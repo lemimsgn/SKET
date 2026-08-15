@@ -322,18 +322,20 @@ export default function LoginPage() {
         )}
 
         {mode === "forgotNotSet" && (
-          <div className="auth-form">
-            <div className="status-badge error">Security questions not set for this account.</div>
-            <button type="button" className="secondary-button full" onClick={handleRequestPassword}>
-              Request password
-            </button>
-            <button type="button" className="secondary-button small-action" onClick={handleBackToLogin}>
-              Back to login
-            </button>
-          </div>
-          <p className="copy-small" style={{ marginTop: 12 }}>
-            Don't have an account? <Link href="/signup" className="secondary-button small-action">Sign up</Link>
-          </p>
+          <>
+            <div className="auth-form">
+              <div className="status-badge error">Security questions not set for this account.</div>
+              <button type="button" className="secondary-button full" onClick={handleRequestPassword}>
+                Request password
+              </button>
+              <button type="button" className="secondary-button small-action" onClick={handleBackToLogin}>
+                Back to login
+              </button>
+            </div>
+            <p className="copy-small" style={{ marginTop: 12 }}>
+              Don't have an account? <Link href="/signup" className="secondary-button small-action">Sign up</Link>
+            </p>
+          </>
         )}
       </div>
     </main>
