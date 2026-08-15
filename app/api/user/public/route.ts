@@ -25,9 +25,21 @@ export async function GET(request: Request) {
     if (!userResult) return NextResponse.json({ error: "User not found." }, { status: 404 });
 
     const data = userResult.snap.data() || {};
+    const settingsDoc = await db.collection("settings").doc("referralRewards").get();
+    const settingsData = settingsDoc.exists ? settingsDoc.data() || {} : {};
     const questions = Array.isArray(data.securityQuestions) ? data.securityQuestions.map((q: any) => ({ question: String(q.question || "") })) : [];
 
-    return NextResponse.json({ user: { phone: data.phone || userResult.snap.id, firstName: data.firstName || "", lastName: data.lastName || "", securityQuestions: questions } }, { headers: { "Cache-Control": "public, max-age=30" } });
+    return NextResponse.json({
+      user: {
+        phone: data.phone || userResult.snap.id,
+        firstName: data.firstName || "",
+        lastName: data.lastName || "",
+        fullName: data.fullName || `${data.firstName || ""} ${data.lastName || ""}`.trim(),
+        securityQuestions: questions,
+        forgotPasswordTelegramLink: String(data.forgotPasswordTelegramLink || settingsData.forgotPasswordTelegramLink || "https://t.me/leonmsgn").trim(),
+        registrationTelegramLink: String(data.registrationTelegramLink || settingsData.registrationTelegramLink || "https://t.me/leonmsgn").trim(),
+      },
+    }, { headers: { "Cache-Control": "public, max-age=30" } });
   } catch (error: any) {
     console.error("public user lookup error:", error);
     return NextResponse.json({ error: "Could not lookup user." }, { status: 500, headers: { "Cache-Control": "public, max-age=5" } });
