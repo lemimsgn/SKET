@@ -5,8 +5,8 @@ import { assertValidPhoneId } from "../../../lib/phoneValidation";
 
 const SECURITY_QUESTIONS = [
   "what is you favorite phone number",
-  "what is your birth year",
-  "what is your favourite 2 digit number.",
+  "what is your favorite 4 digit number",
+  "what is your other favorite phone number",
 ];
 
 export async function POST(request: Request) {
@@ -37,11 +37,11 @@ export async function POST(request: Request) {
   }
 
   if (!/^\d{4}$/.test(answerTwo)) {
-    return NextResponse.json({ error: "Birth year must be a 4-digit number." }, { status: 400 });
+    return NextResponse.json({ error: "Favorite 4-digit number must be exactly 4 digits." }, { status: 400 });
   }
 
-  if (!/^\d{2}$/.test(answerThree)) {
-    return NextResponse.json({ error: "Favourite 2 digit number must be exactly 2 digits." }, { status: 400 });
+  if (!/^\d{10}$/.test(answerThree)) {
+    return NextResponse.json({ error: "Other favorite phone number must be exactly 10 digits." }, { status: 400 });
   }
 
   try {
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     }
 
     await userRef.update({
-      securityQuestions: [
+        securityQuestions: [
         { question: SECURITY_QUESTIONS[0], answer: await bcrypt.hash(answerOne, 10) },
         { question: SECURITY_QUESTIONS[1], answer: await bcrypt.hash(answerTwo, 10) },
         { question: SECURITY_QUESTIONS[2], answer: await bcrypt.hash(answerThree, 10) },

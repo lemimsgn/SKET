@@ -775,7 +775,7 @@ export default function DashboardPage() {
                       <input
                         type="text"
                         className="input-field"
-                        value="what is your birth year"
+                        value="what is your favorite 4 digit number"
                         disabled
                       />
                     </div>
@@ -784,7 +784,7 @@ export default function DashboardPage() {
                       <input
                         id="answerTwo"
                         type="text"
-                        placeholder="Enter your birth year"
+                        placeholder="Enter your favorite 4-digit number"
                         value={answerTwo}
                         onChange={(e) => setAnswerTwo(e.target.value)}
                       />
@@ -794,7 +794,7 @@ export default function DashboardPage() {
                       <input
                         type="text"
                         className="input-field"
-                        value="what is your favourite 2 digit number."
+                        value="what is your other favorite phone number"
                         disabled
                       />
                     </div>
@@ -803,7 +803,7 @@ export default function DashboardPage() {
                       <input
                         id="answerThree"
                         type="text"
-                        placeholder="Enter your favourite 2 digit number"
+                        placeholder="Enter your other favorite phone number (10 digits)"
                         value={answerThree}
                         onChange={(e) => setAnswerThree(e.target.value)}
                       />
@@ -840,13 +840,13 @@ export default function DashboardPage() {
 
                       if (!/^\d{4}$/.test(answerTwo)) {
                         setSecurityStatus("error");
-                        setSecurityMessage("Birth year must be a 4-digit number.");
+                        setSecurityMessage("Favorite 4-digit number must be exactly 4 digits.");
                         return;
                       }
 
-                      if (!/^\d{2}$/.test(answerThree)) {
+                      if (!/^\d{10}$/.test(answerThree)) {
                         setSecurityStatus("error");
-                        setSecurityMessage("Favourite 2 digit number must be exactly 2 digits.");
+                        setSecurityMessage("Other favorite phone number must be exactly 10 digits.");
                         return;
                       }
 
@@ -873,8 +873,8 @@ export default function DashboardPage() {
                             ...user,
                             securityQuestions: [
                               { question: "what is you favorite phone number", answer: answerOne },
-                              { question: "what is your birth year", answer: answerTwo },
-                              { question: "what is your favourite 2 digit number.", answer: answerThree },
+                              { question: "what is your favorite 4 digit number", answer: answerTwo },
+                              { question: "what is your other favorite phone number", answer: answerThree },
                             ],
                             securityQuestionsExist: true,
                           });
