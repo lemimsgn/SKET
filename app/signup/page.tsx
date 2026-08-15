@@ -42,14 +42,14 @@ export default function SignupPage() {
       setReferralChecking(true);
       setReferralLookupError("");
       try {
-        const response = await fetch(`/api/referral-invites?referralCode=${encodeURIComponent(referralCode.trim().toUpperCase())}`, {
+        const response = await fetch(`/api/referrals/lookup?referralCode=${encodeURIComponent(referralCode.trim().toUpperCase())}`, {
           signal: controller.signal,
         });
         if (!response.ok) {
           throw new Error("Referral lookup failed.");
         }
         const data = await response.json();
-        const inviter = data.inviter || (Array.isArray(data.invites) && data.invites.length > 0 ? data.invites[0] : null);
+        const inviter = data.inviter || null;
         if (inviter) {
           setReferralUserName(`${inviter.firstName || ""} ${inviter.lastName || ""}`.trim());
           setReferralLookupError("");

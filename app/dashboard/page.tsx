@@ -173,6 +173,45 @@ export default function DashboardPage() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (err) {
+      console.warn("Logout request failed:", err);
+    }
+
+    try {
+      // Clear client-side sket-* keys
+      if (typeof window !== "undefined") {
+        Object.keys(window.localStorage || {})
+          .filter((k) => k.startsWith("sket-"))
+          .forEach((k) => window.localStorage.removeItem(k));
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    try {
+      if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const r of regs) {
+          try {
+            await r.unregister();
+          } catch (e) {
+            // ignore
+          }
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // Redirect to login page
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+  };
+
   const renderPageHeader = (eyebrow: string, title: string, description?: string) => (
     <div className="section-header">
       <div>
@@ -534,13 +573,7 @@ export default function DashboardPage() {
                       >
                         Profile
                       </button>
-                      <button
-                        type="button"
-                        className="profile-menu-link logout-btn"
-                        onClick={() => {
-                          window.location.href = "/login";
-                        }}
-                      >
+                      <button type="button" className="profile-menu-link logout-btn" onClick={handleLogout}>
                         Log out
                       </button>
                     </div>
