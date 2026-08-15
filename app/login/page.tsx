@@ -74,7 +74,7 @@ export default function LoginPage() {
     }
 
     try {
-      const response = await fetch(`/api/user?phone=${encodeURIComponent(phoneValue)}`);
+      const response = await fetch(`/api/user/public?phone=${encodeURIComponent(phoneValue)}`);
       const data = await response.json();
       if (!response.ok || !data.user) {
         setError(data.error || "No user found with that phone number.");
