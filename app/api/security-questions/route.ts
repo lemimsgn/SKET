@@ -56,6 +56,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Security answers must be different from each other." }, { status: 400 });
   }
 
+  // Do not allow user to set their account phone number as one of the favorite phone answers
+  if (answerOne === phone || answerThree === phone) {
+    return NextResponse.json({ error: "Security answers cannot be your account phone number." }, { status: 400 });
+  }
+
   try {
     const userResult = await getUserDocumentByPhone(phone);
     if (!userResult) {

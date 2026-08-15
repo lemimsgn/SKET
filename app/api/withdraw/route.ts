@@ -90,6 +90,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, id: requestRef.id });
   } catch (error: any) {
     console.error("withdraw error:", error);
+    const msg = error?.message;
+    if (msg) {
+      return NextResponse.json({ error: msg }, { status: 400 });
+    }
     return NextResponse.json({ error: "Something went wrong, please try again." }, { status: 500 });
   }
 }
