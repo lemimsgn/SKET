@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../lib/firebaseClient";
+import { getAdminSession, setAdminSession } from "../authClient";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -14,20 +15,13 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function checkSession() {
-      if (typeof window === "undefined") return;
-      try {
-        const response = await fetch("/api/admin/session", { cache: "no-store" });
-        if (response.ok) {
-          router.replace("/admin");
-        }
-      } catch {
-        // ignore
-      }
-    }
+    if (typeof window === "undefined") return;
 
-    checkSession();
-  }, [router]);
+    const existingSession = getAdminSession();
+    if (existingSession) {
+      router.replace("/admin");
+    }
+  }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -40,31 +34,22 @@ export default function AdminLoginPage() {
 
     setLoading(true);
     if (!auth) {
-      setError(
-        "Firebase auth is not initialized. Make sure NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN, and NEXT_PUBLIC_FIREBASE_PROJECT_ID are configured."
-      );
+      setError("Firebase auth is not initialized.");
       setLoading(false);
       return;
     }
 
     signInWithEmailAndPassword(auth, email.trim(), password)
-      .then(async (userCredential) => {
+      .then((userCredential) => {
         const user = userCredential.user;
-        const idToken = await user.getIdToken();
-
-        const response = await fetch("/api/admin/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken }),
-        });
-
-        if (!response.ok) {
-          const body = await response.text();
-          setError(body || "You are not authorized to access the admin panel.");
+        if (user.uid !== "1O4AvTFu3YMKeJo8AI0GTEK2epI2") {
+          setError("You are not authorized to access the admin panel.");
           setLoading(false);
           return;
         }
 
+        const adminUser = { email: user.email || undefined, username: user.email || "admin", name: "Admin" };
+        setAdminSession(adminUser);
         router.push("/admin");
       })
       .catch((err) => {
