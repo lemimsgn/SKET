@@ -761,14 +761,14 @@ export default function DashboardPage() {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="answerOne">Answer 1</label>
-                      <input
-                        id="answerOne"
-                        type="text"
-                        placeholder="Enter your favorite phone number"
-                        value={answerOne}
-                        onChange={(e) => setAnswerOne(e.target.value)}
-                      />
+                        <label htmlFor="answerOne">Answer 1</label>
+                        <input
+                          id="answerOne"
+                          type="text"
+                          placeholder="Enter your favorite phone number (10 digits)"
+                          value={answerOne}
+                          onChange={(e) => setAnswerOne(e.target.value)}
+                        />
                     </div>
                     <div className="form-group">
                       <label>Question 2</label>
@@ -809,16 +809,16 @@ export default function DashboardPage() {
                       />
                     </div>
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="securityConfirmPassword">Confirm password</label>
-                    <input
-                      id="securityConfirmPassword"
-                      type="password"
-                      placeholder="Enter current password"
-                      value={securityConfirmPassword}
-                      onChange={(e) => setSecurityConfirmPassword(e.target.value)}
-                    />
-                  </div>
+                    <div className="form-group">
+                      <label htmlFor="securityConfirmPassword">Confirm password</label>
+                      <input
+                        id="securityConfirmPassword"
+                        type="password"
+                        placeholder="Enter current password"
+                        value={securityConfirmPassword}
+                        onChange={(e) => setSecurityConfirmPassword(e.target.value)}
+                      />
+                    </div>
                   <button
                     className="primary-button full"
                     onClick={async () => {
@@ -829,6 +829,33 @@ export default function DashboardPage() {
                       if (!answerOne || !answerTwo || !answerThree) {
                         setSecurityStatus("error");
                         setSecurityMessage("Please answer all three security questions.");
+                        return;
+                      }
+
+                      // Ensure formats
+                      if (!/^\d{10}$/.test(answerOne)) {
+                        setSecurityStatus("error");
+                        setSecurityMessage("Favorite phone number must be exactly 10 digits.");
+                        return;
+                      }
+
+                      if (!/^\d{4}$/.test(answerTwo)) {
+                        setSecurityStatus("error");
+                        setSecurityMessage("Favorite 4-digit number must be exactly 4 digits.");
+                        return;
+                      }
+
+                      if (!/^\d{10}$/.test(answerThree)) {
+                        setSecurityStatus("error");
+                        setSecurityMessage("Other favorite phone number must be exactly 10 digits.");
+                        return;
+                      }
+
+                      // Ensure answers are distinct
+                      const ansSet = new Set([answerOne.trim(), answerTwo.trim(), answerThree.trim()]);
+                      if (ansSet.size !== 3) {
+                        setSecurityStatus("error");
+                        setSecurityMessage("Security answers must be different from each other.");
                         return;
                       }
 

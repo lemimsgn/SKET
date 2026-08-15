@@ -36,12 +36,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error?.message || "Invalid phone number." }, { status: 400 });
   }
 
+  // Validate formats: answerOne and answerThree should be 10-digit phone numbers, answerTwo is 4 digits
+  if (!/^\d{10}$/.test(answerOne)) {
+    return NextResponse.json({ error: "Favorite phone number must be exactly 10 digits." }, { status: 400 });
+  }
+
   if (!/^\d{4}$/.test(answerTwo)) {
     return NextResponse.json({ error: "Favorite 4-digit number must be exactly 4 digits." }, { status: 400 });
   }
 
   if (!/^\d{10}$/.test(answerThree)) {
     return NextResponse.json({ error: "Other favorite phone number must be exactly 10 digits." }, { status: 400 });
+  }
+
+  // Ensure answers are distinct
+  const normalizedAnswers = [answerOne, answerTwo, answerThree].map((a) => a.trim());
+  const uniqueCount = new Set(normalizedAnswers).size;
+  if (uniqueCount !== 3) {
+    return NextResponse.json({ error: "Security answers must be different from each other." }, { status: 400 });
   }
 
   try {
