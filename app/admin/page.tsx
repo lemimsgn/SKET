@@ -25,7 +25,7 @@ export default function AdminDashboardPage() {
       setAdmin(stored);
       loadDashboardData();
     }
-  }, [router]);
+  }, []);
 
   const loadDashboardData = async () => {
     setLoading(true);
