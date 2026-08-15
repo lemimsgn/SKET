@@ -134,7 +134,12 @@ export default function WithdrawPage() {
           </div>
         ) : !user.securityQuestionsExist ? (
           <div className="status-badge error">
-            You must set your security questions before submitting a withdrawal. Go to Settings and set them first.
+            <div>You must set your security questions before submitting a withdrawal.</div>
+            <div style={{ marginTop: 8 }}>
+              <Link href="/dashboard#settings" className="secondary-button small-action">
+                Go to Settings
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="status-badge success">Your account is approved. You may submit a withdrawal request.</div>
