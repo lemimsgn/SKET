@@ -153,7 +153,11 @@ export default function LoginPage() {
         return;
       }
 
+      // Store phone and reset token (if provided) so change-password can use them.
       window.localStorage.setItem("sket-password-reset-phone", foundUser.phone);
+      if (data.resetToken) {
+        window.localStorage.setItem("sket-password-reset-token", String(data.resetToken));
+      }
       setSuccessMessage("Answers verified. Redirecting to password reset...");
       setTimeout(() => {
         window.location.href = "/change-password";

@@ -90,11 +90,20 @@ export async function POST(request: Request) {
     const resetToken = await createPasswordResetToken(phone);
     // send token via configured provider (sms/email). If no provider, it will be logged.
     const delivery = await sendPasswordResetToken(phone, resetToken);
-    if (!delivery.ok) {
-      // still do not return token; inform the caller that delivery failed and ask them to retry or contact support
-      return NextResponse.json({ success: false, message: "Could not deliver reset token. Please try again later or contact support." }, { status: 500 });
-    }
-    return NextResponse.json({ success: true, message: "Security answers verified. A reset token was sent via " + delivery.method }, { status: 200 });
+    // Return resetToken in response so verified users can immediately use it to reset password.
+    // Delivery may still occur separately; including the token in the response supports UX where
+    // the user answered security questions and can proceed to reset immediately.
+    return NextResponse.json(
+      {
+        success: true,
+        message: delivery.ok
+          ? "Security answers verified. A reset token was sent via " + delivery.method
+          : "Security answers verified. Delivery failed; use the provided reset token.",
+        resetToken,
+        deliveryMethod: delivery.method || null,
+      },
+      { status: 200 }
+    );
   } catch (error: any) {
     console.error("security-questions/verify error:", error);
     return NextResponse.json({ error: "Could not verify security answers." }, { status: 500 });

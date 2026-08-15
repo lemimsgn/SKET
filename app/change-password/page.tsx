@@ -11,11 +11,19 @@ export default function ChangePasswordPage() {
 
   useEffect(() => {
     const storedPhone = window.localStorage.getItem("sket-password-reset-phone");
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get("resetToken");
+    const storedToken = window.localStorage.getItem("sket-password-reset-token");
+    if (tokenFromUrl) {
+      window.localStorage.setItem("sket-password-reset-token", tokenFromUrl);
+    }
+    const effectiveToken = tokenFromUrl || storedToken || null;
     if (!storedPhone) {
       setError("Password reset session is not valid. Please start from login.");
       return;
     }
     setPhone(storedPhone);
+    if (effectiveToken) setResetToken(effectiveToken);
   }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -44,10 +52,12 @@ export default function ChangePasswordPage() {
     }
 
     try {
+      const body: any = { phone, newPassword };
+      if (resetToken) body.resetToken = resetToken;
       const response = await fetch("/api/change-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, newPassword }),
+        body: JSON.stringify(body),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -56,7 +66,9 @@ export default function ChangePasswordPage() {
       }
 
       window.localStorage.removeItem("sket-password-reset-phone");
-      setSuccessMessage("Password updated successfully. Please log in with your new password.");
+      window.localStorage.removeItem("sket-password-reset-token");
+      setSuccessMessage("Password updated successfully. Redirecting to login...");
+      setTimeout(() => (window.location.href = "/login"), 800);
     } catch (err) {
       console.warn("Password update failed:", err);
       setError("Unable to update password. Please try again later.");
