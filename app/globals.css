@@ -1619,6 +1619,15 @@ img {
   gap: 8px;
 }
 
+.action-pill {
+  min-height: 40px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  color: #111827;
+  font-size: 13px;
+}
+
 .current-plan-card {
   display: grid;
   gap: 14px;
@@ -1769,6 +1778,27 @@ img {
 .invite-item.transaction-item {
   background: rgba(0, 0, 0, 0.28);
   border-color: rgba(255, 255, 255, 0.04);
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.action-card {
+  min-height: 80px;
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+}
+
+.action-icon {
+  font-size: 18px;
 }
 
 .announcement-card .section-row {
@@ -1928,34 +1958,39 @@ img {
 
 .drawer-links {
   display: grid;
-  gap: 12px;
+  gap: 8px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   max-height: 100%;
+  padding-right: 4px;
 }
 
 .drawer-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  background: rgba(15, 23, 42, 0.04);
+  gap: 12px;
+  padding: 16px 8px;
+  border-radius: 0;
+  background: transparent;
   color: #111827;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: none;
   transition: all 0.18s ease;
+  font-size: 1.05rem;
+  font-weight: 600;
 }
 
 .dashboard-shell .drawer-link {
-  background: rgba(255,255,255,0.04);
+  background: transparent;
   color: #e6eef6;
-  border-color: rgba(255,255,255,0.08);
+  border: none;
+  padding: 18px 8px;
 }
 
 .drawer-link:hover,
 .drawer-link.active {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(99, 102, 241, 0.12));
-  border-color: rgba(37, 99, 235, 0.22);
+  background: transparent;
+  border: none;
+  color: #ffffff;
 }
 
 /* visible scrollbar for the drawer links */
@@ -2866,6 +2901,11 @@ img {
 .balance-actions .primary-button.small { background: linear-gradient(90deg,#06b36a,#04875a); box-shadow: 0 14px 38px rgba(4,70,48,0.42) }
 .balance-actions .secondary-button.small { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.04); color:#d7efe6 }
 
+.quick-actions { margin-top:16px; background: transparent; border: none; box-shadow: none; padding: 10px 0 }
+.quick-grid { display: grid; grid-template-columns: repeat(4,1fr); gap:8px }
+.action-pill { background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)); color:#dfffe6; border: none; box-shadow: 0 6px 20px rgba(0,0,0,0.55); padding:10px; border-radius:12px; font-weight:700; font-size:13px }
+.action-pill.small { padding:8px 12px; font-size:12px }
+
 .referral-invites { margin-top:16px; background: transparent; border: none; box-shadow: none; padding: 8px 0 }
 .invite-list { display: grid; gap:12px }
 .invite-item { display: flex; gap:12px; align-items:flex-start; padding:12px; border-radius:14px; background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.04) }
@@ -2890,6 +2930,9 @@ img {
   border-radius: 22px;
   box-shadow: 0 28px 80px rgba(15, 23, 42, 0.18);
   padding: 22px;
+}
+
+.send-modal {
   max-height: calc(100vh - 40px);
   overflow-y: auto;
 }
@@ -2933,6 +2976,11 @@ img {
   padding: 18px;
 }
 
+.send-modal {
+  max-height: 64vh;
+  overflow-y: auto;
+}
+
 .modal-header {
   display: flex;
   align-items: center;
@@ -2953,6 +3001,10 @@ img {
     padding: 16px;
   }
 
+  .send-modal {
+    max-height: 60vh;
+  }
+
   .modal-header {
     gap: 8px;
     margin-bottom: 14px;
@@ -2968,17 +3020,24 @@ img {
   }
 
   .balance-display,
+  .recipient-top-card,
   .form-group input {
     padding: 12px 14px;
   }
 
   .balance-label,
+  .recipient-top-label,
   .form-group label {
     font-size: 11px;
   }
 
   .balance-amount {
     font-size: 22px;
+  }
+
+  .balance-caption,
+  .recipient-top-name {
+    font-size: 12px;
   }
 
   .primary-button.full,
@@ -2993,6 +3052,10 @@ img {
     width: min(300px, calc(100% - 24px));
     padding: 14px;
     border-radius: 18px;
+  }
+
+  .send-modal {
+    max-height: 58vh;
   }
 
   .modal-header {
@@ -3010,17 +3073,24 @@ img {
   }
 
   .balance-display,
+  .recipient-top-card,
   .form-group input {
     padding: 10px 12px;
   }
 
   .balance-label,
+  .recipient-top-label,
   .form-group label {
     font-size: 10px;
   }
 
   .balance-amount {
     font-size: 20px;
+  }
+
+  .balance-caption,
+  .recipient-top-name {
+    font-size: 11px;
   }
 
   .primary-button.full,
@@ -3057,6 +3127,10 @@ img {
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
+.send-balance {
+  display: grid;
+  gap: 4px;
+}
 
 .balance-label {
   display: block;
@@ -3070,6 +3144,35 @@ img {
   display: block;
   font-size: 22px;
   font-weight: 900;
+  color: #f8fafc;
+}
+
+.balance-caption {
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.recipient-top-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 12px;
+}
+
+.recipient-top-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #93c5fd;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.recipient-top-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
   color: #f8fafc;
 }
 
@@ -3106,6 +3209,20 @@ img {
 
 .form-group input.error {
   border-color: #ef4444;
+}
+
+.recipient-info {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.recipient-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #065f46;
 }
 
 .hint-message,
@@ -3513,6 +3630,7 @@ img {
 /* small screens tweak */
 @media (max-width:420px) {
   .balance-value { font-size:22px }
+  .quick-grid { grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px }
 }
 
 /* Dashboard-specific transaction contrast overrides */
