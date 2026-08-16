@@ -98,8 +98,8 @@ export default function SignupPage() {
       return;
     }
 
-    if (!/^\d{6,}$/.test(password.trim())) {
-      setError("Password must be at least 6 digits.");
+    if (password.trim().length < 8) {
+      setError("Password must be at least 8 characters and can include letters, numbers, and symbols.");
       return;
     }
 
@@ -198,16 +198,14 @@ export default function SignupPage() {
                   <h2 className="subheading">Security</h2>
                   <div className="field-grid">
                     <div className="field-group">
-                      <label htmlFor="signupPassword">Password (min 6 digits)</label>
+                      <label htmlFor="signupPassword">Password (min 8 characters)</label>
                       <input
                         id="signupPassword"
                         className="input-field"
-                        inputMode="numeric"
-                        maxLength={10}
                         type={showPassword ? "text" : "password"}
                         value={password}
-                        onChange={(event) => setPassword(event.target.value.replace(/\D/g, "").slice(0, 10))}
-                        placeholder="Enter at least 6 digits"
+                        onChange={(event) => setPassword(event.target.value)}
+                        placeholder="Enter at least 8 characters"
                         required
                       />
                     </div>
@@ -216,11 +214,9 @@ export default function SignupPage() {
                       <input
                         id="confirmPassword"
                         className="input-field"
-                        inputMode="numeric"
-                        maxLength={10}
                         type={showPassword ? "text" : "password"}
                         value={confirmPassword}
-                        onChange={(event) => setConfirmPassword(event.target.value.replace(/\D/g, "").slice(0, 10))}
+                        onChange={(event) => setConfirmPassword(event.target.value)}
                         placeholder="Repeat your password"
                         required
                       />

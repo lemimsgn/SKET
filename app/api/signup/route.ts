@@ -37,8 +37,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Phone number must start with 09 or 07 and be exactly 10 digits." }, { status: 400 });
     }
 
-    if (!/^\d{6,}$/.test(password.trim())) {
-      return NextResponse.json({ error: "Password must be at least 6 digits." }, { status: 400 });
+    if (password.trim().length < 8) {
+      return NextResponse.json({ error: "Password must be at least 8 characters and can include letters, numbers, and symbols." }, { status: 400 });
     }
 
     if (referralCode && !/^[A-Z]{2}\d{4}$/.test(referralCode)) {
