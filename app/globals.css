@@ -2574,6 +2574,51 @@ img {
   color: #2563eb;
 }
 
+@media (max-width: 767px) {
+  .promo-slider {
+    height: 220px;
+  }
+
+  .promo-card {
+    padding: 22px 18px 20px;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .promo-card > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    padding-right: 8px;
+  }
+
+  .promo-title {
+    font-size: 28px;
+    line-height: 1.15;
+    max-width: 100%;
+    word-break: break-word;
+  }
+
+  .promo-sub {
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 100%;
+  }
+
+  .promo-icon {
+    font-size: 38px;
+    margin-left: auto;
+    align-self: center;
+    flex-shrink: 0;
+  }
+
+  .promo-cta {
+    width: fit-content;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+}
+
 @media (min-width: 768px) {
   .hero-title-large {
     font-size: 64px;
