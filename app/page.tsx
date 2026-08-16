@@ -129,8 +129,8 @@ function PromoSlider() {
           <div className="promo-card c1 active">
             <div>
               <span className="promo-badge">REFERRAL BONUS</span>
-              <p className="promo-title">Invite 2 friends<br />and earn 3000 Birr</p>
-              <p className="promo-sub">Tap your referral link and cash in the moment they join your network.</p>
+              <p className="promo-title">Invite 1 user<br />and get 1500 Birr</p>
+              <p className="promo-sub">Share your referral link and earn instantly when someone joins with your code.</p>
               <button type="button" className="promo-cta" onClick={() => handlePromoShare()}>Invite now →</button>
             </div>
             <div className="promo-icon">🎁</div>
@@ -138,10 +138,10 @@ function PromoSlider() {
 
           <div className="promo-card c2">
             <div>
-              <span className="promo-badge">KEEP EARNING</span>
-              <p className="promo-title">Earn 1000 Birr<br />per extra invite</p>
-              <p className="promo-sub">Build your referral chain and unlock bigger payouts as your circle grows.</p>
-              <button type="button" className="promo-cta" onClick={() => handlePromoShare()}>Start sharing →</button>
+              <span className="promo-badge">LEVEL UP</span>
+              <p className="promo-title">Invite 2 users<br />and get 3000 Birr</p>
+              <p className="promo-sub">After that, you get 1000 Birr for each extra invite and keep building your earnings.</p>
+              <button type="button" className="promo-cta" onClick={() => handlePromoShare()}>Share now →</button>
             </div>
             <div className="promo-icon">💰</div>
           </div>
@@ -149,9 +149,9 @@ function PromoSlider() {
           <div className="promo-card c3">
             <div>
               <span className="promo-badge">AGENT PATH</span>
-              <p className="promo-title">Become an agent<br />and grow monthly income</p>
-              <p className="promo-sub">Move from referrals into a bigger earning model with recurring rewards.</p>
-              <button type="button" className="promo-cta" onClick={() => handlePromoShare()}>See the path →</button>
+              <p className="promo-title">Become an agent<br />of SKET and earn monthly</p>
+              <p className="promo-sub">Grow your network, become a SKET agent, and receive a monthly payout for your impact.</p>
+              <button type="button" className="promo-cta" onClick={() => handlePromoShare()}>Join now →</button>
             </div>
             <div className="promo-icon">🚀</div>
           </div>
