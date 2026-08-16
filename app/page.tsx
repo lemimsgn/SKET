@@ -9,6 +9,62 @@ const stats = [
   { number: "₦2B+", label: "Paid Out" },
 ];
 
+const APP_SHARE_URL = "https://sket-beige.vercel.app";
+
+const getStoredReferralCode = () => {
+  if (typeof window === "undefined") return "";
+
+  try {
+    return window.localStorage.getItem("sketReferralCode") || "";
+  } catch (error) {
+    return "";
+  }
+};
+
+const buildReferralShareText = (referralCode?: string) => {
+  const code = (referralCode || getStoredReferralCode() || "YOUR_REFERRAL_CODE").trim();
+  return `Join SKET today and start learning while growing your network.\n\nSign up with this referral code: ${code}\n\nWeb link: ${APP_SHARE_URL}`;
+};
+
+const handlePromoShare = async (referralCode?: string) => {
+  const shareText = buildReferralShareText(referralCode);
+
+  try {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      await navigator.share({
+        title: "Join SKET",
+        text: shareText,
+        url: APP_SHARE_URL,
+      });
+      return;
+    }
+  } catch (error) {
+    console.warn("Native share cancelled or unavailable:", error);
+  }
+
+  const fallbackOptions = [
+    { label: "WhatsApp", url: `https://wa.me/?text=${encodeURIComponent(shareText)}` },
+    { label: "Telegram", url: `https://t.me/share/url?url=${encodeURIComponent(APP_SHARE_URL)}&text=${encodeURIComponent(shareText)}` },
+    { label: "SMS", url: `sms:?body=${encodeURIComponent(shareText)}` },
+    { label: "Email", url: `mailto:?subject=${encodeURIComponent("Join SKET")}&body=${encodeURIComponent(shareText)}` },
+  ];
+
+  if (typeof navigator !== "undefined" && navigator.clipboard) {
+    try {
+      await navigator.clipboard.writeText(shareText);
+      window.alert("Invite message copied. You can paste it anywhere to share.");
+      return;
+    } catch (error) {
+      console.warn("Clipboard copy failed:", error);
+    }
+  }
+
+  const target = fallbackOptions[0];
+  if (target) {
+    window.open(target.url, "_blank", "noopener,noreferrer");
+  }
+};
+
 function PromoSlider() {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [index, setIndex] = useState(0);
@@ -75,7 +131,7 @@ function PromoSlider() {
               <span className="promo-badge">REFERRAL BONUS</span>
               <p className="promo-title">Invite 2 friends<br />and earn 3000 Birr</p>
               <p className="promo-sub">Tap your referral link and cash in the moment they join your network.</p>
-              <button className="promo-cta">Invite now →</button>
+              <button type="button" className="promo-cta" onClick={() => handlePromoShare()}>Invite now →</button>
             </div>
             <div className="promo-icon">🎁</div>
           </div>
@@ -85,7 +141,7 @@ function PromoSlider() {
               <span className="promo-badge">KEEP EARNING</span>
               <p className="promo-title">Earn 1000 Birr<br />per extra invite</p>
               <p className="promo-sub">Build your referral chain and unlock bigger payouts as your circle grows.</p>
-              <button className="promo-cta">Start sharing →</button>
+              <button type="button" className="promo-cta" onClick={() => handlePromoShare()}>Start sharing →</button>
             </div>
             <div className="promo-icon">💰</div>
           </div>
@@ -95,7 +151,7 @@ function PromoSlider() {
               <span className="promo-badge">AGENT PATH</span>
               <p className="promo-title">Become an agent<br />and grow monthly income</p>
               <p className="promo-sub">Move from referrals into a bigger earning model with recurring rewards.</p>
-              <button className="promo-cta">See the path →</button>
+              <button type="button" className="promo-cta" onClick={() => handlePromoShare()}>See the path →</button>
             </div>
             <div className="promo-icon">🚀</div>
           </div>

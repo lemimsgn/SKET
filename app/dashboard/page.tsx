@@ -469,6 +469,50 @@ export default function DashboardPage() {
   const notifications = Array.isArray(user.notifications) ? user.notifications : [];
   const unreadNotifications = notifications.filter((notification) => !notification.read).length;
 
+  const APP_SHARE_URL = "https://sket-beige.vercel.app";
+
+  const buildReferralShareText = (referralCode?: string) => {
+    const code = (referralCode || referralNumber || "YOUR_REFERRAL_CODE").trim();
+    return `Join SKET today and start learning while growing your network.\n\nSign up with this referral code: ${code}\n\nWeb link: ${APP_SHARE_URL}`;
+  };
+
+  const handlePromoShare = async (referralCode?: string) => {
+    const shareText = buildReferralShareText(referralCode);
+
+    try {
+      if (typeof navigator !== "undefined" && navigator.share) {
+        await navigator.share({
+          title: "Join SKET",
+          text: shareText,
+          url: APP_SHARE_URL,
+        });
+        return;
+      }
+    } catch (error) {
+      console.warn("Native share cancelled or unavailable:", error);
+    }
+
+    const fallbackLinks = [
+      { label: "WhatsApp", url: `https://wa.me/?text=${encodeURIComponent(shareText)}` },
+      { label: "Telegram", url: `https://t.me/share/url?url=${encodeURIComponent(APP_SHARE_URL)}&text=${encodeURIComponent(shareText)}` },
+      { label: "SMS", url: `sms:?body=${encodeURIComponent(shareText)}` },
+      { label: "Email", url: `mailto:?subject=${encodeURIComponent("Join SKET")}&body=${encodeURIComponent(shareText)}` },
+    ];
+
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        setCopiedMessage(true);
+        setTimeout(() => setCopiedMessage(false), 2200);
+        return;
+      } catch (error) {
+        console.warn("Clipboard copy failed:", error);
+      }
+    }
+
+    window.open(fallbackLinks[0].url, "_blank", "noopener,noreferrer");
+  };
+
   const formattedTransactions = transactions.map((tx) => ({
     ...tx,
     dateLabel: typeof tx.createdAt === "string" ? tx.createdAt : tx.createdAt instanceof Date ? tx.createdAt.toLocaleString() : tx.createdAt?.toString?.() || "Unknown date",
@@ -1081,7 +1125,7 @@ export default function DashboardPage() {
                       <span className="promo-badge">REFERRAL BONUS</span>
                       <p className="promo-title">Invite 2 friends<br />and get 3000 Birr</p>
                       <p className="promo-sub">Share your referral link and earn instantly when they join.</p>
-                      <button className="promo-cta">Invite now →</button>
+                      <button type="button" className="promo-cta" onClick={() => handlePromoShare(referralNumber)}>Invite now →</button>
                     </div>
                     <div className="promo-icon">🎁</div>
                   </div>
@@ -1090,7 +1134,7 @@ export default function DashboardPage() {
                       <span className="promo-badge">KEEP EARNING</span>
                       <p className="promo-title">Get 1000 Birr<br />for every extra invite</p>
                       <p className="promo-sub">No limit — the more you invite, the more you earn.</p>
-                      <button className="promo-cta">Invite more →</button>
+                      <button type="button" className="promo-cta" onClick={() => handlePromoShare(referralNumber)}>Invite more →</button>
                     </div>
                     <div className="promo-icon">💸</div>
                   </div>
@@ -1099,7 +1143,7 @@ export default function DashboardPage() {
                       <span className="promo-badge">LEVEL UP</span>
                       <p className="promo-title">Become an Agent<br />and earn monthly</p>
                       <p className="promo-sub">Top referrers unlock agent status with recurring income.</p>
-                      <button className="promo-cta">Learn more →</button>
+                      <button type="button" className="promo-cta" onClick={() => handlePromoShare(referralNumber)}>Learn more →</button>
                     </div>
                     <div className="promo-icon">🚀</div>
                   </div>
