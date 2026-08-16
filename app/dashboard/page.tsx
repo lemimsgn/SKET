@@ -1192,9 +1192,7 @@ export default function DashboardPage() {
                       title="Share referral code"
                       aria-label="Share referral code"
                     >
-                      <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false" className="share-icon-svg">
-                        <path d="M48 16c-8.6 0-15.5 6.9-15.5 15.5 0 .9.1 1.8.3 2.7L23 38.8c-2.2-2-5.1-3.2-8.3-3.2-6.8 0-12.3 5.5-12.3 12.3S7.9 60 14.7 60c6.2 0 11.4-4.6 12.2-10.5l9.3-4.3c1.9 1.6 4.3 2.6 7.1 2.6 5.9 0 10.7-4.8 10.7-10.7S53.9 16 48 16zm0 18.5c-4.7 0-8.5-3.8-8.5-8.5s3.8-8.5 8.5-8.5 8.5 3.8 8.5 8.5-3.8 8.5-8.5 8.5zM14.7 48.5c-4.3 0-7.7-3.5-7.7-7.7s3.5-7.7 7.7-7.7c4.3 0 7.7 3.5 7.7 7.7s-3.4 7.7-7.7 7.7z" fill="currentColor"/>
-                      </svg>
+                      Share
                     </button>
                   </div>
                 </div>
