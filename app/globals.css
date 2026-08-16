@@ -3104,6 +3104,13 @@ img {
   box-shadow: var(--shadow-soft);
 }
 
+.balance-hero-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .balance-hero .eyebrow-small { color: #2563eb; }
 .balance-hero .hero-name { margin: 6px 0 10px; font-size: 24px; font-weight: 900; color: #111827; text-shadow: none; }
 .profile-page-header .hero-name { color: #111827 !important; }

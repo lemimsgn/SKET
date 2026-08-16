@@ -485,8 +485,10 @@ export default function DashboardPage() {
   const referralCode = user.referralCode ?? "-";
   const referralNumber = (user.referralNumber || user.referralCode) ?? "-";
   const isApprovedUser = user.status === "approved";
-  const referralDisplayText = isApprovedUser ? referralNumber : "verify payment to get your referral code";
-  const canShareReferral = isApprovedUser && Boolean(referralNumber && referralNumber !== "-");
+  const isLockedUser = user.status === "locked";
+  const isPendingUser = !isApprovedUser && !isLockedUser && user.status !== "rejected";
+  const referralDisplayText = isApprovedUser || isLockedUser ? referralNumber : "verify payment to get your referral code";
+  const canShareReferral = (isApprovedUser || isLockedUser) && Boolean(referralNumber && referralNumber !== "-");
   const statusLabel = user.status ?? (user.approved ? "approved" : "pending");
   const notifications = Array.isArray(user.notifications) ? user.notifications : [];
   const unreadNotifications = notifications.filter((notification) => !notification.read).length;
@@ -1110,8 +1112,13 @@ export default function DashboardPage() {
             )}
 
             <section className="balance-hero card">
-              <p className="eyebrow-small">Welcome back,</p>
-              <h1 className="hero-name">{user.firstName} {user.lastName}</h1>
+              <div className="balance-hero-header">
+                <div>
+                  <p className="eyebrow-small">Welcome back,</p>
+                  <h1 className="hero-name">{user.firstName} {user.lastName}</h1>
+                </div>
+                {isLockedUser && <span className="status-pill status-locked">Locked</span>}
+              </div>
               <div className="balance-panel">
                 <div>
                   <div className="status-label">Status</div>
