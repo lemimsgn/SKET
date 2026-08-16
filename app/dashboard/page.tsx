@@ -463,6 +463,7 @@ export default function DashboardPage() {
   const displayBalance = user.walletBalance ?? 0;
   const totalEarned = user.totalEarned ?? 0;
   const totalWithdrawn = user.totalWithdrawn ?? 0;
+  const registrationPaymentAmount = user.status === "approved" ? Number(registrationFee || 3000) : 0;
   const referralCode = user.referralCode ?? "-";
   const referralNumber = (user.referralNumber || user.referralCode) ?? "-";
   const statusLabel = user.status ?? (user.approved ? "approved" : "pending");
@@ -699,8 +700,8 @@ export default function DashboardPage() {
                   <strong>{displayBalance.toLocaleString()} ETB</strong>
                 </div>
                 <div className="profile-stat">
-                  <span>Total earned</span>
-                  <strong>{totalEarned.toLocaleString()} ETB</strong>
+                  <span>{user.status === "approved" ? "Registration payment" : "Registration payment"}</span>
+                  <strong>{user.status === "approved" ? `${registrationPaymentAmount.toLocaleString()} ETB` : "—"}</strong>
                 </div>
                 <div className="profile-stat">
                   <span>Total withdrawn</span>
@@ -1113,10 +1114,12 @@ export default function DashboardPage() {
                       {balanceHidden ? "👁️" : "👁️‍🗨️"}
                     </button>
                   </div>
-                  <div className="wallet-bottom">
-                    <span>Total Earned</span>
-                    <span>{balanceHidden ? "••••••" : `£${Number(totalEarned).toLocaleString()}`}</span>
-                  </div>
+                  {user.status === "approved" && (
+                    <div className="wallet-bottom">
+                      <span>Registration payment</span>
+                      <span>{balanceHidden ? "••••••" : `${registrationPaymentAmount.toLocaleString()} ETB`}</span>
+                    </div>
+                  )}
                   <div className="wallet-bottom">
                     <span>Total Withdrawn</span>
                     <span>{balanceHidden ? "••••••" : `£${Number(totalWithdrawn).toLocaleString()}`}</span>
