@@ -18,12 +18,10 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = getAdminSession();
-      if (!stored) {
-        router.replace("/admin/login");
-        return;
-      }
       setAdmin(stored);
-      loadDashboardData();
+      if (stored) {
+        loadDashboardData();
+      }
     }
   }, []);
 

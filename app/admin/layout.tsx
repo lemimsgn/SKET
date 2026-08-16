@@ -1,54 +1,38 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import type { PropsWithChildren } from "react";
+import { getAdminSession } from "./authClient";
 
 export default function AdminLayout({ children }: PropsWithChildren<{}>) {
   const pathname = usePathname();
   const router = useRouter();
   const [sideOpen, setSideOpen] = useState(false);
-  const [authChecking, setAuthChecking] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   const isLoginPath = pathname?.startsWith("/admin/login");
 
   useEffect(() => {
     if (isLoginPath) {
-      setAuthChecking(false);
+      setIsAuthorized(true);
       return;
     }
-
-    async function verifyAdminSession() {
-      try {
-        const response = await fetch("/api/admin/session", { cache: "no-store" });
-        if (!response.ok) {
-          router.replace("/admin/login");
-          setAuthChecking(false);
-          return;
-        }
-
-        setAuthChecking(false);
-      } catch (error) {
-        router.replace("/admin/login");
-        setAuthChecking(false);
-      }
+    
+    const stored = getAdminSession();
+    if (!stored) {
+      router.replace("/admin/login");
+    } else {
+      setIsAuthorized(true);
     }
-
-    verifyAdminSession();
-  }, [isLoginPath, router]);
-
-  if (authChecking) {
-    return (
-      <main className="page-shell admin-dashboard-shell">
-        <div className="container auth-card">
-          <p className="copy-small">Checking admin session...</p>
-        </div>
-      </main>
-    );
-  }
+  }, []);
 
   if (isLoginPath) {
     return <>{children}</>;
+  }
+
+  if (!isAuthorized) {
+    return null;
   }
 
   return (
