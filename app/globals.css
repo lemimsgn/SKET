@@ -3628,12 +3628,16 @@ img {
 .approval-body {
   display: grid;
   gap: 16px;
+  position: relative;
+  z-index: 1;
 }
 
 .approval-text {
   margin: 0;
   color: #e2e8f0;
   line-height: 1.7;
+  position: relative;
+  z-index: 1;
 }
 
 .approval-detail-group {
@@ -3645,18 +3649,24 @@ img {
   border-radius: 16px;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+  flex-wrap: wrap;
 }
 
 .detail-label {
   color: #cbd5e1;
   font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .detail-value {
   color: #ffffff;
   font-size: 16px;
   font-weight: 800;
+  text-shadow: 0 1px 2px rgba(15, 23, 42, 0.35);
 }
 
 .account-copy-button {
@@ -3674,6 +3684,22 @@ img {
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.16s ease, background 0.16s ease;
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+.account-copy-button span {
+  display: inline-block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: left;
+  flex: 1;
+}
+
+.account-copy-button strong {
+  flex-shrink: 0;
+  color: #ffffff;
 }
 
 .account-copy-button:hover {

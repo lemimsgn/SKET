@@ -373,9 +373,27 @@ export default function DashboardPage() {
     setWithdrawLoading(false);
   };
 
+  const handleWithdrawButtonClick = () => {
+    if (!isApprovedUser) {
+      setShowWithdrawForm(true);
+      setWithdrawError("Please verify payment before requesting a withdrawal.");
+      setWithdrawSuccess("");
+      return;
+    }
+
+    setShowWithdrawForm(true);
+    setWithdrawError("");
+    setWithdrawSuccess("");
+  };
+
   const handleWithdrawSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!user) return;
+
+    if (!isApprovedUser) {
+      setWithdrawError("Please verify payment before requesting a withdrawal.");
+      return;
+    }
 
     setWithdrawError("");
     setWithdrawSuccess("");
@@ -1100,12 +1118,12 @@ export default function DashboardPage() {
                   <div className="status-value">{statusLabel}</div>
                 </div>
                 <div className="balance-actions">
-                  <button className="secondary-button small" onClick={() => {
-                    setShowWithdrawForm(true);
-                    setWithdrawError("");
-                    setWithdrawSuccess("");
-                  }}>
-                    Withdraw
+                  <button
+                    className="secondary-button small"
+                    onClick={handleWithdrawButtonClick}
+                    title={isApprovedUser ? "Withdraw funds" : "Verify payment before withdrawing"}
+                  >
+                    {isApprovedUser ? "Withdraw" : "Verify payment"}
                   </button>
                 </div>
               </div>
