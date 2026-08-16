@@ -78,6 +78,37 @@ export default function DashboardPage() {
   const [requestAgainMessage, setRequestAgainMessage] = useState("");
   const [requestAgainStatus, setRequestAgainStatus] = useState<"idle" | "success" | "error">("idle");
   const [requestAgainLoading, setRequestAgainLoading] = useState(false);
+  const [promoIndex, setPromoIndex] = useState(0);
+
+  const applyPromoSlide = (nextIndex: number) => {
+    const cards = document.querySelectorAll(".dashboard-promo-track .promo-card");
+    const dots = document.querySelectorAll(".dashboard-promo-dots .promo-dot");
+    const track = document.querySelector(".dashboard-promo-track") as HTMLElement | null;
+
+    cards.forEach((card, index) => {
+      card.classList.toggle("active", index === nextIndex);
+    });
+
+    dots.forEach((dot, index) => {
+      dot.classList.toggle("active", index === nextIndex);
+    });
+
+    if (track) {
+      track.style.transform = `translateX(-${nextIndex * 100}%)`;
+    }
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPromoIndex((prev) => {
+        const nextIndex = (prev + 1) % 3;
+        applyPromoSlide(nextIndex);
+        return nextIndex;
+      });
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const securityQuestionsExist = (user as any)?.securityQuestionsExist ?? (!!user?.securityQuestions && Array.isArray(user.securityQuestions) && user.securityQuestions.length >= 2);
 
@@ -1079,17 +1110,11 @@ export default function DashboardPage() {
                   <button
                     key={dotIndex}
                     type="button"
-                    className={`promo-dot ${dotIndex === 0 ? "active" : ""}`}
+                    className={`promo-dot ${dotIndex === promoIndex ? "active" : ""}`}
                     aria-label={`Go to slide ${dotIndex + 1}`}
                     onClick={() => {
-                      const cards = document.querySelectorAll(".dashboard-promo-track .promo-card");
-                      const dots = document.querySelectorAll(".dashboard-promo-dots .promo-dot");
-                      cards.forEach((card, index) => card.classList.toggle("active", index === dotIndex));
-                      dots.forEach((dot, index) => dot.classList.toggle("active", index === dotIndex));
-                      const track = document.querySelector(".dashboard-promo-track") as HTMLElement | null;
-                      if (track) {
-                        track.style.transform = `translateX(-${dotIndex * 100}%)`;
-                      }
+                      setPromoIndex(dotIndex);
+                      applyPromoSlide(dotIndex);
                     }}
                   />
                 ))}
