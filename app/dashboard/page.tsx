@@ -160,7 +160,7 @@ export default function DashboardPage() {
     }
 
     try {
-      const message = `Full name: ${user?.firstName} ${user?.lastName}.\nPhone: ${user?.phone}.\nReferral code: ${referralNumber}.\nPlease attach the payment screenshot.`;
+      const message = `Full name: ${user?.firstName} ${user?.lastName}.\nPhone: ${user?.phone}.\nPlease attach the payment screenshot.`;
       const link = registrationTelegramLink || "https://t.me/leonmsgn";
       const telegramUrl = new URL(link);
       telegramUrl.searchParams.set("text", message);
