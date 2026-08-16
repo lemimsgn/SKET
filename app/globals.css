@@ -2365,6 +2365,168 @@ img {
   gap: 12px;
 }
 
+.promo-wrap {
+  width: 100%;
+  max-width: 760px;
+  margin-top: 26px;
+}
+
+.promo-slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  height: 190px;
+}
+
+.promo-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.promo-card {
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 36px;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.promo-card.c1 { background: linear-gradient(135deg, #3b5bfd, #2540c9); }
+.promo-card.c2 { background: linear-gradient(135deg, #2540c9, #16205e); }
+.promo-card.c3 { background: linear-gradient(135deg, #16205e, #0b1440); }
+
+.promo-card::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+
+.promo-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #dfe6ff;
+  background: rgba(255,255,255,0.15);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+
+.promo-title {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.3;
+  margin: 0 0 6px 0;
+  max-width: 380px;
+}
+
+.promo-sub {
+  color: #cdd7ff;
+  font-size: 14px;
+  margin: 0;
+  max-width: 360px;
+}
+
+.promo-icon {
+  font-size: 46px;
+  z-index: 1;
+}
+
+.promo-cta {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  color: #2540c9;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.promo-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.promo-dot {
+  width: 8px;
+  height: 8px;
+  border: none;
+  border-radius: 50%;
+  background: #c3cbf2;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.promo-dot.active {
+  background: #2757e6;
+  width: 22px;
+  border-radius: 5px;
+}
+
+.promo-card .promo-badge,
+.promo-card .promo-title,
+.promo-card .promo-sub,
+.promo-card .promo-cta,
+.promo-card .promo-icon {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.promo-card.active .promo-badge,
+.promo-card.active .promo-title,
+.promo-card.active .promo-sub,
+.promo-card.active .promo-cta,
+.promo-card.active .promo-icon {
+  animation: promoIn 0.55s ease forwards;
+}
+
+.promo-card.active .promo-badge { animation-delay: 0.05s; }
+.promo-card.active .promo-title { animation-delay: 0.15s; }
+.promo-card.active .promo-sub { animation-delay: 0.25s; }
+.promo-card.active .promo-cta { animation-delay: 0.35s; }
+.promo-card.active .promo-icon {
+  animation-name: promoInIcon;
+  animation-delay: 0.2s;
+}
+
+.dashboard-promo-wrap {
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+.dashboard-promo-slider {
+  height: 180px;
+}
+
+@keyframes promoIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes promoInIcon {
+  from { opacity: 0; transform: translateY(14px) scale(0.7); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .feature-badge {
   display: inline-flex;
   width: fit-content;

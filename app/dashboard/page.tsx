@@ -1042,6 +1042,60 @@ export default function DashboardPage() {
               </div>
             </section>
 
+            <section className="promo-wrap dashboard-promo-wrap">
+              <div className="promo-slider dashboard-promo-slider">
+                <div className="promo-track dashboard-promo-track">
+                  <div className="promo-card c1 active">
+                    <div>
+                      <span className="promo-badge">REFERRAL BONUS</span>
+                      <p className="promo-title">Invite 2 friends<br />and get 3000 Birr</p>
+                      <p className="promo-sub">Share your referral link and earn instantly when they join.</p>
+                      <button className="promo-cta">Invite now →</button>
+                    </div>
+                    <div className="promo-icon">🎁</div>
+                  </div>
+                  <div className="promo-card c2">
+                    <div>
+                      <span className="promo-badge">KEEP EARNING</span>
+                      <p className="promo-title">Get 1000 Birr<br />for every extra invite</p>
+                      <p className="promo-sub">No limit — the more you invite, the more you earn.</p>
+                      <button className="promo-cta">Invite more →</button>
+                    </div>
+                    <div className="promo-icon">💸</div>
+                  </div>
+                  <div className="promo-card c3">
+                    <div>
+                      <span className="promo-badge">LEVEL UP</span>
+                      <p className="promo-title">Become an Agent<br />and earn monthly</p>
+                      <p className="promo-sub">Top referrers unlock agent status with recurring income.</p>
+                      <button className="promo-cta">Learn more →</button>
+                    </div>
+                    <div className="promo-icon">🚀</div>
+                  </div>
+                </div>
+              </div>
+              <div className="promo-dots dashboard-promo-dots">
+                {[0, 1, 2].map((dotIndex) => (
+                  <button
+                    key={dotIndex}
+                    type="button"
+                    className={`promo-dot ${dotIndex === 0 ? "active" : ""}`}
+                    aria-label={`Go to slide ${dotIndex + 1}`}
+                    onClick={() => {
+                      const cards = document.querySelectorAll(".dashboard-promo-track .promo-card");
+                      const dots = document.querySelectorAll(".dashboard-promo-dots .promo-dot");
+                      cards.forEach((card, index) => card.classList.toggle("active", index === dotIndex));
+                      dots.forEach((dot, index) => dot.classList.toggle("active", index === dotIndex));
+                      const track = document.querySelector(".dashboard-promo-track") as HTMLElement | null;
+                      if (track) {
+                        track.style.transform = `translateX(-${dotIndex * 100}%)`;
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </section>
+
             <section className="referral-invites card">
               <div className="referral-header">
                 <div>
