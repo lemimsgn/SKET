@@ -3574,12 +3574,14 @@ img {
 .invite-phone { margin:0; font-size:12px; color:#6b7280 }
 .referral-code-badge { display:inline-block; padding:4px 8px; background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); border-radius:6px; font-size:12px; font-weight:700; color:#2563eb; margin-left:auto }
 
-.referral-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb }
-.referral-label { margin:0 0 6px 0; font-size:12px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px }
-.referral-code-display { display:flex; align-items:center; gap:8px; background:#f8fafc; padding:10px 12px; border-radius:10px; border:1px solid #e5e7eb }
+.referral-header { display:flex; justify-content:center; align-items:center; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb }
+.referral-code-column { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.referral-label { margin:0 0 8px 0; font-size:12px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px }
+.referral-code-display { display:flex; align-items:center; justify-content:center; gap:10px; background:#f8fafc; padding:10px 16px; border-radius:10px; border:1px solid #e5e7eb; min-width:230px }
 .referral-code-text { font-size:18px; font-weight:800; color:#0f766e; font-family:monospace; letter-spacing:1px }
-.copy-btn { background:none; border:none; cursor:pointer; font-size:16px; padding:4px 6px; display:flex; align-items:center; justify-content:center; transition:transform 0.2s }
-.copy-btn:active { transform:scale(0.9) }
+.share-btn { background: rgba(37, 99, 235, 0.08); border:1px solid rgba(37, 99, 235, 0.18); color:#1d4ed8; border-radius:8px; cursor:pointer; font-size:16px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; transition:all 0.2s ease }
+.share-btn:hover { background: rgba(37, 99, 235, 0.12); transform:translateY(-1px) }
+.share-btn:active { transform:scale(0.96) }
 .invites-title { margin:16px 0 12px 0; font-size:16px; font-weight:700; color:#111827 }
 .toast-message { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#7ef3b3; color:#111827; padding:10px 16px; border-radius:8px; font-size:13px; font-weight:600; z-index:1000; animation:toast-slide-up 0.3s ease-out }
 

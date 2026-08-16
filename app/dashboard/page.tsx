@@ -1181,20 +1181,18 @@ export default function DashboardPage() {
 
             <section className="referral-invites card">
               <div className="referral-header">
-                <div>
+                <div className="referral-code-column">
                   <p className="referral-label">Your Referral Code</p>
                   <div className="referral-code-display">
                     <span className="referral-code-text">{referralNumber}</span>
                     <button
-                      className="copy-btn"
-                      onClick={() => {
-                        navigator.clipboard.writeText(referralNumber || "");
-                        setCopiedMessage(true);
-                        setTimeout(() => setCopiedMessage(false), 2000);
-                      }}
-                      title="Copy referral code"
+                      className="share-btn"
+                      type="button"
+                      onClick={() => handlePromoShare(referralNumber)}
+                      title="Share referral code"
+                      aria-label="Share referral code"
                     >
-                      📋
+                      📤
                     </button>
                   </div>
                 </div>
