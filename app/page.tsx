@@ -73,8 +73,8 @@ function PromoSlider() {
           <div className="promo-card c1 active">
             <div>
               <span className="promo-badge">REFERRAL BONUS</span>
-              <p className="promo-title">Invite 2 friends<br />and get 3000 Birr</p>
-              <p className="promo-sub">Share your referral link and earn instantly when they join.</p>
+              <p className="promo-title">Invite 2 friends<br />and earn 3000 Birr</p>
+              <p className="promo-sub">Tap your referral link and cash in the moment they join your network.</p>
               <button className="promo-cta">Invite now →</button>
             </div>
             <div className="promo-icon">🎁</div>
@@ -83,19 +83,19 @@ function PromoSlider() {
           <div className="promo-card c2">
             <div>
               <span className="promo-badge">KEEP EARNING</span>
-              <p className="promo-title">Get 1000 Birr<br />for every extra invite</p>
-              <p className="promo-sub">No limit — the more you invite, the more you earn.</p>
-              <button className="promo-cta">Invite more →</button>
+              <p className="promo-title">Earn 1000 Birr<br />per extra invite</p>
+              <p className="promo-sub">Build your referral chain and unlock bigger payouts as your circle grows.</p>
+              <button className="promo-cta">Start sharing →</button>
             </div>
-            <div className="promo-icon">💸</div>
+            <div className="promo-icon">💰</div>
           </div>
 
           <div className="promo-card c3">
             <div>
-              <span className="promo-badge">LEVEL UP</span>
-              <p className="promo-title">Become an Agent<br />and earn monthly</p>
-              <p className="promo-sub">Top referrers unlock agent status with recurring income.</p>
-              <button className="promo-cta">Learn more →</button>
+              <span className="promo-badge">AGENT PATH</span>
+              <p className="promo-title">Become an agent<br />and grow monthly income</p>
+              <p className="promo-sub">Move from referrals into a bigger earning model with recurring rewards.</p>
+              <button className="promo-cta">See the path →</button>
             </div>
             <div className="promo-icon">🚀</div>
           </div>

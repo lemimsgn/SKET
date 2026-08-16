@@ -2397,8 +2397,8 @@ img {
 }
 
 .promo-card.c1 { background: linear-gradient(135deg, #3b5bfd, #2540c9); }
-.promo-card.c2 { background: linear-gradient(135deg, #2540c9, #16205e); }
-.promo-card.c3 { background: linear-gradient(135deg, #16205e, #0b1440); }
+.promo-card.c2 { background: linear-gradient(135deg, #7c3aed, #4f46e5); }
+.promo-card.c3 { background: linear-gradient(135deg, #0f766e, #0f172a); }
 
 .promo-card::after {
   content: "";
