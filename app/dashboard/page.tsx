@@ -466,6 +466,9 @@ export default function DashboardPage() {
   const registrationPaymentAmount = user.status === "approved" ? Number(registrationFee || 3000) : 0;
   const referralCode = user.referralCode ?? "-";
   const referralNumber = (user.referralNumber || user.referralCode) ?? "-";
+  const isApprovedUser = user.status === "approved";
+  const referralDisplayText = isApprovedUser ? referralNumber : "verify payment to get your referral code";
+  const canShareReferral = isApprovedUser && Boolean(referralNumber && referralNumber !== "-");
   const statusLabel = user.status ?? (user.approved ? "approved" : "pending");
   const notifications = Array.isArray(user.notifications) ? user.notifications : [];
   const unreadNotifications = notifications.filter((notification) => !notification.read).length;
@@ -492,6 +495,10 @@ export default function DashboardPage() {
   };
 
   const handlePromoShare = async (referralCode?: string) => {
+    if (!canShareReferral) {
+      return;
+    }
+
     const shareText = buildReferralShareText(referralCode);
 
     try {
@@ -1142,7 +1149,7 @@ export default function DashboardPage() {
                       <span className="promo-badge">REFERRAL BONUS</span>
                       <p className="promo-title">Invite 1 user<br />and get 1500 Birr</p>
                       <p className="promo-sub">Share your referral link and earn instantly when someone joins with your code.</p>
-                      <button type="button" className="promo-cta" onClick={() => handlePromoShare(referralNumber)}>Invite now →</button>
+                      <button type="button" className="promo-cta" onClick={() => handlePromoShare(referralNumber)} disabled={!canShareReferral}>Invite now →</button>
                     </div>
                     <div className="promo-icon">🎁</div>
                   </div>
@@ -1151,7 +1158,7 @@ export default function DashboardPage() {
                       <span className="promo-badge">LEVEL UP</span>
                       <p className="promo-title">Invite 2 users<br />and get 3000 Birr</p>
                       <p className="promo-sub">After that, you get 1000 Birr for each extra invite and keep building your earnings.</p>
-                      <button type="button" className="promo-cta" onClick={() => handlePromoShare(referralNumber)}>Share now →</button>
+                      <button type="button" className="promo-cta" onClick={() => handlePromoShare(referralNumber)} disabled={!canShareReferral}>Share now →</button>
                     </div>
                     <div className="promo-icon">💰</div>
                   </div>
@@ -1160,7 +1167,7 @@ export default function DashboardPage() {
                       <span className="promo-badge">AGENT PATH</span>
                       <p className="promo-title">Become an agent<br />of SKET and earn monthly</p>
                       <p className="promo-sub">Grow your network, become a SKET agent, and receive a monthly payout for your impact.</p>
-                      <button type="button" className="promo-cta" onClick={() => handlePromoShare(referralNumber)}>Join now →</button>
+                      <button type="button" className="promo-cta" onClick={() => handlePromoShare(referralNumber)} disabled={!canShareReferral}>Join now →</button>
                     </div>
                     <div className="promo-icon">🚀</div>
                   </div>
@@ -1187,15 +1194,16 @@ export default function DashboardPage() {
                 <div className="referral-code-column">
                   <p className="referral-label">Your Referral Code</p>
                   <div className="referral-code-display">
-                    <span className="referral-code-text">{referralNumber}</span>
+                    <span className="referral-code-text">{referralDisplayText}</span>
                     <button
                       className="share-btn"
                       type="button"
                       onClick={() => handlePromoShare(referralNumber)}
-                      title="Share referral code"
-                      aria-label="Share referral code"
+                      title={canShareReferral ? "Share referral code" : "Verify payment to unlock referral code"}
+                      aria-label={canShareReferral ? "Share referral code" : "Verify payment to unlock referral code"}
+                      disabled={!canShareReferral}
                     >
-                      Share
+                      {canShareReferral ? "Share" : "Locked"}
                     </button>
                   </div>
                 </div>
