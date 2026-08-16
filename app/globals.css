@@ -2707,13 +2707,13 @@ img {
   justify-content: space-between;
   gap: 12px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .notification-panel-head span,
 .notification-empty,
 .notification-item small {
-  color: #9ab3a4;
+  color: #6b7280;
   font-size: 12px;
 }
 
@@ -2728,12 +2728,13 @@ img {
 .notification-item {
   padding: 10px;
   border-radius: 10px;
-  background: rgba(255,255,255,0.05);
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
 }
 
 .notification-item p {
   margin: 0 0 4px;
-  color: #e6fff2;
+  color: #111827;
   font-size: 13px;
 }
 
@@ -2763,12 +2764,12 @@ img {
   z-index: 41;
   width: min(220px, calc(100vw - 24px));
   border-radius: 18px;
-  background: rgba(15, 23, 42, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
   animation: menu-slide-in 0.18s ease-out;
   overflow: hidden;
-  backdrop-filter: blur(14px);
+  backdrop-filter: none;
 }
 
 @keyframes menu-slide-in {
@@ -2787,7 +2788,7 @@ img {
   align-items: center;
   gap: 10px;
   padding: 10px 12px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .profile-menu-avatar {
@@ -2809,13 +2810,13 @@ img {
 }
 
 .profile-menu-name {
-  color: #f8fafc;
+  color: #111827;
   font-size: 13px;
   font-weight: 700;
 }
 
 .profile-menu-title {
-  color: #94a3b8;
+  color: #6b7280;
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2832,18 +2833,19 @@ img {
   gap: 4px;
   padding: 10px 12px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.04);
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
 }
 
 .profile-detail span {
-  color: #94a3b8;
+  color: #6b7280;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
 
 .profile-detail strong {
-  color: #f8fafc;
+  color: #111827;
   font-size: 14px;
   font-weight: 700;
 }
@@ -2855,7 +2857,7 @@ img {
 }
 
 .profile-menu-item {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid #e5e7eb;
 }
 
 .profile-menu-link {
@@ -2864,7 +2866,7 @@ img {
   padding: 15px 18px;
   border: none;
   background: transparent;
-  color: #e5e7eb;
+  color: #111827;
   font-size: 14px;
   text-align: left;
   cursor: pointer;
@@ -2872,17 +2874,17 @@ img {
 }
 
 .profile-menu-link:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #ffffff;
+  background: #f3f4f6;
+  color: #111827;
 }
 
 .profile-menu-link.logout-btn {
-  color: #fecaca;
+  color: #b91c1c;
 }
 
 .profile-menu-link.logout-btn:hover {
-  background: rgba(252, 165, 165, 0.14);
-  color: #fff;
+  background: rgba(239, 68, 68, 0.08);
+  color: #991b1b;
 }
 
 .balance-hero {
