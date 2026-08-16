@@ -73,7 +73,12 @@ export default function AdminDashboardPage() {
     return response.json();
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Logout API error:", err);
+    }
     setAdminSession(null);
     router.push("/admin/login");
   };

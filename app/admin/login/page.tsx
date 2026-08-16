@@ -40,13 +40,38 @@ export default function AdminLoginPage() {
     }
 
     signInWithEmailAndPassword(auth, email.trim(), password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
         if (user.uid !== "1O4AvTFu3YMKeJo8AI0GTEK2epI2") {
           setError("You are not authorized to access the admin panel.");
           setLoading(false);
           return;
         }
+
+        // Get the ID token
+        const idToken = await user.getIdToken();
+        
+        // Verify token and set admin claims
+        try {
+          const verifyRes = await fetch("/api/admin/verify-token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idToken }),
+          });
+          if (!verifyRes.ok) {
+            setError("Failed to verify admin token");
+            setLoading(false);
+            return;
+          }
+        } catch (err) {
+          console.error("Token verification failed:", err);
+          setError("Failed to verify admin token");
+          setLoading(false);
+          return;
+        }
+
+        // Store token in cookie and session
+        document.cookie = `sket-admin-session=${encodeURIComponent(idToken)}; path=/; max-age=${60 * 60 * 24 * 7}`;
 
         const adminUser = { email: user.email || undefined, username: user.email || "admin", name: "Admin" };
         setAdminSession(adminUser);
