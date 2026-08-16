@@ -58,6 +58,7 @@ export async function GET(request: NextRequest) {
         selectedPlan: userData.selectedPlan || "",
         approved: userData.approved ?? false,
         status: userData.status || (userData.approved ? "approved" : "pending"),
+        rejectionCount: Number(userData.rejectionCount || 0),
         walletBalance: userData.walletBalance ?? 0,
         totalEarned: userData.totalEarned ?? 0,
         totalWithdrawn: userData.totalWithdrawn ?? 0,

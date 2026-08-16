@@ -21,6 +21,7 @@ type UserRecord = {
   registrationAccountNumber?: string;
   registrationTelegramLink?: string;
   securityQuestionsExist?: boolean;
+  rejectionCount?: number;
 };
 
 type ReferralInvite = {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomInt } from "crypto";
 import { requireAdminAuth } from "../../../../lib/adminAuth";
-import { db, firebaseAdminInitError as rawFirebaseAdminInitError } from "../../../../lib/firebaseAdmin";
+import { db, auth, firebaseAdminInitError as rawFirebaseAdminInitError } from "../../../../lib/firebaseAdmin";
 import { appendNotification } from "../../../../lib/notifications";
 
 const firebaseAdminInitError = rawFirebaseAdminInitError as Error | null;
@@ -22,6 +22,39 @@ async function createReferralCode() {
   }
 
   throw new Error("Could not create a unique referral code. Please try again.");
+}
+
+async function deleteUserAndRelatedData(userId: string, phone: string, uid?: string) {
+  if (!db) {
+    return;
+  }
+
+  const deleteByField = async (collectionName: string, fieldName: string, value: string) => {
+    const snapshot = await db!.collection(collectionName).where(fieldName, "==", value).limit(200).get();
+    if (snapshot.empty) {
+      return;
+    }
+
+    const batch = db!.batch();
+    snapshot.docs.forEach((doc: any) => batch.delete(doc.ref));
+    await batch.commit();
+  };
+
+  await deleteByField("withdrawRequests", "userId", userId);
+  await deleteByField("withdrawRequests", "phone", phone);
+  await deleteByField("walletTransactions", "userId", userId);
+  await deleteByField("walletTransactions", "phone", phone);
+
+  const userRef = db.collection("users").doc(userId);
+  await userRef.delete();
+
+  if (uid && auth) {
+    try {
+      await auth.deleteUser(uid);
+    } catch (error: any) {
+      console.warn("Failed to delete Firebase Auth user during rejection cleanup:", error?.message || error);
+    }
+  }
 }
 
 async function applyReferralReward(userId: string, referredBy: string) {
@@ -136,28 +169,69 @@ export async function POST(request: Request) {
     }
 
     const currentData = currentUser.data() || {};
+    const rejectionCount = Number(currentData.rejectionCount || 0);
+
+    if (status === "rejected") {
+      const nextRejectionCount = rejectionCount + 1;
+      const finalRejection = nextRejectionCount >= 3;
+
+      if (finalRejection) {
+        await deleteUserAndRelatedData(id, String(currentData.phone || ""), String(currentData.uid || ""));
+        return NextResponse.json({
+          success: true,
+          deleted: true,
+          rejectionCount: nextRejectionCount,
+          message: "User account was rejected for the third time and has been deleted automatically.",
+        });
+      }
+
+      await db.runTransaction(async (transaction: any) => {
+        await appendNotification(ref, {
+          type: "registration",
+          message: "Your registration was rejected.",
+          createdAt: new Date(),
+          read: false,
+        }, 100, transaction);
+        transaction.update(ref, {
+          status: "rejected",
+          approvedAt: null,
+          rejectionCount: nextRejectionCount,
+          updatedAt: new Date(),
+        });
+      });
+
+      return NextResponse.json({
+        success: true,
+        deleted: false,
+        rejectionCount: nextRejectionCount,
+        remainingTries: Math.max(0, 3 - nextRejectionCount),
+        message: nextRejectionCount >= 2
+          ? "This is the final opportunity. If the account is rejected again, it will be deleted automatically."
+          : "User registration rejected. They still have 2 attempts left before automatic deletion.",
+      });
+    }
+
     const existingReferralCode = String(currentData.referralCode || "").trim().toUpperCase();
     const referralCode =
-      status === "approved"
-        ? /^[A-Z]{2}\d{4}$/.test(existingReferralCode)
-          ? existingReferralCode
-          : await createReferralCode()
-        : existingReferralCode || null;
+      /^[A-Z]{2}\d{4}$/.test(existingReferralCode)
+        ? existingReferralCode
+        : await createReferralCode();
 
-    const referralReward =
-      status === "approved" ? await applyReferralReward(id, String(currentData.referredBy || currentData.referralCode || currentData.referralNumber || "")) : null;
+    const referralReward = await applyReferralReward(id, String(currentData.referredBy || currentData.referralCode || currentData.referralNumber || ""));
 
     await db.runTransaction(async (transaction: any) => {
       await appendNotification(ref, {
         type: "registration",
-        message: status === "approved" ? "Your registration has been approved." : "Your registration was rejected.",
+        message: "Your registration has been approved.",
         createdAt: new Date(),
         read: false,
       }, 100, transaction);
       transaction.update(ref, {
         status,
-        approvedAt: status === "approved" ? new Date() : null,
+        approvedAt: new Date(),
         referralCode,
+        rejectionCount: 0,
+        updatedAt: new Date(),
       });
     });
 

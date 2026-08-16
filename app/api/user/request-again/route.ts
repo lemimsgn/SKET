@@ -27,6 +27,12 @@ export async function POST(request: Request) {
     }
 
     const userRef = userResult.ref;
+    const userData = userResult.snap.data() || {};
+    const rejectionCount = Number(userData.rejectionCount || 0);
+    const remainingAttempts = Math.max(0, 3 - rejectionCount);
+    const warning = rejectionCount >= 2
+      ? "This is your final chance. If your account is rejected again, it will be deleted automatically."
+      : `You have ${remainingAttempts} attempt${remainingAttempts === 1 ? "" : "s"} left before your account may be deleted automatically.`;
 
     await db!.runTransaction(async (transaction: any) => {
       await appendNotification(userRef, {
@@ -43,7 +49,12 @@ export async function POST(request: Request) {
       });
     });
 
-    return NextResponse.json({ success: true, message: "Registration request resent to admin." });
+    return NextResponse.json({
+      success: true,
+      remainingAttempts,
+      warning,
+      message: warning,
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to resend registration request." }, { status: 500 });
   }
