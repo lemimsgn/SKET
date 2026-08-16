@@ -33,6 +33,19 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loadingOverview, setLoadingOverview] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(false);
+
+  const updateStatusFilter = (nextStatus: string) => {
+    setStatus(nextStatus);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      if (nextStatus) {
+        url.searchParams.set("status", nextStatus);
+      } else {
+        url.searchParams.delete("status");
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+  };
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -155,12 +168,29 @@ export default function AdminUsersPage() {
 
         {isStatusMode ? (
           <>
+            <div className="status-tabs" style={{ marginBottom: 18 }}>
+              <button
+                type="button"
+                className={`status-tab ${status === "pending" ? "active" : ""}`}
+                onClick={() => updateStatusFilter("pending")}
+              >
+                Pending User
+              </button>
+              <button
+                type="button"
+                className={`status-tab ${status === "rejected" ? "active" : ""}`}
+                onClick={() => updateStatusFilter("rejected")}
+              >
+                Rejected User
+              </button>
+            </div>
+
             {loadingUsers ? (
               <p className="copy-small">Loading users...</p>
             ) : error ? (
               <div className="status-badge error">{error}</div>
             ) : users.length === 0 ? (
-              <p className="copy-small">There is no pending user.</p>
+              <p className="copy-small">There is no {status === "rejected" ? "rejected" : "pending"} user.</p>
             ) : (
               <div className="dashboard-grid user-list-grid">
                 {users.map((user) => (
