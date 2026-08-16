@@ -1053,7 +1053,7 @@ export default function DashboardPage() {
           </section>
         ) : (
           <>
-            {user.status !== "approved" && (
+            {user.status !== "approved" && user.status !== "locked" && (
               <section className="pending-approval-card card">
                 <div className="approval-header">
                   <div>
