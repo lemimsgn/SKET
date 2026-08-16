@@ -474,15 +474,19 @@ export default function DashboardPage() {
   const buildReferralShareText = (referralCode?: string) => {
     const code = (referralCode || referralNumber || "YOUR_REFERRAL_CODE").trim();
     return [
-      "Join SKET and earn with referrals!",
+      "✨ Join SKET and earn with referrals! ✨",
       "",
-      "1. Invite 1 user and get 1500 birr",
-      "2. Invite 2 users and get 3000 birr",
-      "3. After that you get 1000 birr for each invite",
-      "4. Become an agent of SKET and you will be paid monthly",
+      "🎉 1. Invite 1 user and get 1500 birr",
+      "🔥 2. Invite 2 users and get 3000 birr",
+      "💸 3. After that you get 1000 birr for each invite",
+      "🚀 4. Become an agent of SKET and you will be paid monthly",
       "",
-      `Sign up with this referral code: ${code}`,
-      `Web link: ${APP_SHARE_URL}`,
+      "🔑 Referral Code:",
+      `${code.toUpperCase()}`,
+      "",
+      `🌐 Web link: ${APP_SHARE_URL}`,
+      "",
+      "✅ Sign up today and start earning!",
     ].join("\n");
   };
 
