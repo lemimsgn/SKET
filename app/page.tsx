@@ -80,51 +80,54 @@ function PromoSlider() {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const cards = trackRef.current?.children ?? [];
-    const dots = document.querySelectorAll(".promo-dot");
+    const cards = Array.from(trackRef.current?.children ?? []) as HTMLElement[];
+    const dots = Array.from(document.querySelectorAll(".promo-dot")) as HTMLElement[];
 
     if (!cards.length) return;
 
-    const goTo = (nextIndex: number) => {
-      setIndex(nextIndex);
-      if (trackRef.current) {
-        trackRef.current.style.transform = `translateX(-${nextIndex * 100}%)`;
-      }
+    const applySlide = (nextIndex: number) => {
+      if (!trackRef.current) return;
+
+      trackRef.current.style.transform = `translateX(-${nextIndex * 100}%)`;
+
+      cards.forEach((card, cardIndex) => {
+        card.classList.toggle("active", cardIndex === nextIndex);
+      });
+
       dots.forEach((dot, dotIndex) => {
         dot.classList.toggle("active", dotIndex === nextIndex);
       });
-
-      Array.from(cards).forEach((card, cardIndex) => {
-        card.classList.toggle("active", cardIndex === nextIndex);
-      });
     };
 
-    const timer = setInterval(() => {
+    applySlide(0);
+
+    const timer = window.setInterval(() => {
       setIndex((prevIndex) => {
         const nextIndex = (prevIndex + 1) % cards.length;
-        goTo(nextIndex);
+        applySlide(nextIndex);
         return nextIndex;
       });
     }, 5000);
 
-    goTo(0);
-
-    return () => clearInterval(timer);
+    return () => window.clearInterval(timer);
   }, []);
 
   const handleDotClick = (nextIndex: number) => {
     setIndex(nextIndex);
-    if (trackRef.current) {
-      trackRef.current.style.transform = `translateX(-${nextIndex * 100}%)`;
-    }
 
-    const cards = Array.from(trackRef.current?.children ?? []);
-    const dots = document.querySelectorAll(".promo-dot");
-    dots.forEach((dot, dotIndex) => {
-      dot.classList.toggle("active", dotIndex === nextIndex);
-    });
+    const cards = Array.from(trackRef.current?.children ?? []) as HTMLElement[];
+    const dots = Array.from(document.querySelectorAll(".promo-dot")) as HTMLElement[];
+
+    if (!trackRef.current || !cards.length) return;
+
+    trackRef.current.style.transform = `translateX(-${nextIndex * 100}%)`;
+
     cards.forEach((card, cardIndex) => {
       card.classList.toggle("active", cardIndex === nextIndex);
+    });
+
+    dots.forEach((dot, dotIndex) => {
+      dot.classList.toggle("active", dotIndex === nextIndex);
     });
   };
 

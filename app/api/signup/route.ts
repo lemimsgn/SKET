@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     const settingsRef = db.collection("settings").doc("referralRewards");
     const settingsSnapshot = await settingsRef.get();
     const settingsData = settingsSnapshot.exists ? settingsSnapshot.data() || {} : {};
-    const registrationFeeValue = Number(settingsData.registrationFee ?? 3000);
+    const registrationFeeValue = Number(settingsData.registrationFee ?? 1000);
 
     await db.runTransaction(async (transaction: any) => {
       const existingUser = await transaction.get(userRef);

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function AdminSettingsPage() {
-  const [registrationFee, setRegistrationFee] = useState(3000);
+  const [registrationFee, setRegistrationFee] = useState(1000);
   const [accountNumber, setAccountNumber] = useState("1000686058477");
   const [registrationTelegramLink, setRegistrationTelegramLink] = useState("https://t.me/leonmsgn");
   const [forgotPasswordTelegramLink, setForgotPasswordTelegramLink] = useState("https://t.me/leonmsgn");
@@ -28,7 +28,7 @@ export default function AdminSettingsPage() {
         throw new Error(`Connection error. Please try again later.`);
       }
       const data = await res.json();
-      setRegistrationFee(Number(data.registrationFee ?? 3000));
+      setRegistrationFee(Number(data.registrationFee ?? 1000));
       setAccountNumber(String(data.accountNumber || "1000686058477"));
       setRegistrationTelegramLink(String(data.registrationTelegramLink || "https://t.me/leonmsgn"));
       setForgotPasswordTelegramLink(String(data.forgotPasswordTelegramLink || "https://t.me/leonmsgn"));

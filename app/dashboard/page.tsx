@@ -54,7 +54,7 @@ export default function DashboardPage() {
   const [withdrawError, setWithdrawError] = useState("");
   const [withdrawSuccess, setWithdrawSuccess] = useState("");
   const [withdrawLoading, setWithdrawLoading] = useState(false);
-  const [registrationFee, setRegistrationFee] = useState(3000);
+  const [registrationFee, setRegistrationFee] = useState(1000);
   const [registrationAccountNumber, setRegistrationAccountNumber] = useState("1000686058477");
   const [registrationTelegramLink, setRegistrationTelegramLink] = useState("https://t.me/leonmsgn");
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
@@ -304,7 +304,7 @@ export default function DashboardPage() {
 
         const userObj = data.user as UserRecord;
         setUser(userObj);
-        setRegistrationFee(userObj.registrationFee ?? 3000);
+        setRegistrationFee(userObj.registrationFee ?? 1000);
         setRegistrationAccountNumber(userObj.registrationAccountNumber || "1000686058477");
         setRegistrationTelegramLink(userObj.registrationTelegramLink || "https://t.me/leonmsgn");
         setLoadingUser(false);
@@ -463,7 +463,7 @@ export default function DashboardPage() {
   const displayBalance = user.walletBalance ?? 0;
   const totalEarned = user.totalEarned ?? 0;
   const totalWithdrawn = user.totalWithdrawn ?? 0;
-  const registrationPaymentAmount = user.status === "approved" ? Number(registrationFee || 3000) : 0;
+  const registrationPaymentAmount = user.status === "approved" ? Number(registrationFee || 1000) : 0;
   const referralCode = user.referralCode ?? "-";
   const referralNumber = (user.referralNumber || user.referralCode) ?? "-";
   const statusLabel = user.status ?? (user.approved ? "approved" : "pending");

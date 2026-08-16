@@ -2394,6 +2394,7 @@ img {
   border-radius: 20px;
   position: relative;
   overflow: hidden;
+  pointer-events: auto;
 }
 
 .promo-card.c1 { background: linear-gradient(135deg, #3b5bfd, #2540c9); }
