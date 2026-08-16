@@ -75,7 +75,7 @@ export default function AdminLoginPage() {
 
         const adminUser = { email: user.email || undefined, username: user.email || "admin", name: "Admin" };
         setAdminSession(adminUser);
-        router.push("/admin");
+        router.replace("/admin");
       })
       .catch((err) => {
         setError(err.message || "Invalid login credentials.");

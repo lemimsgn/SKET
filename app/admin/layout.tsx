@@ -10,29 +10,41 @@ export default function AdminLayout({ children }: PropsWithChildren<{}>) {
   const router = useRouter();
   const [sideOpen, setSideOpen] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
 
   const isLoginPath = pathname?.startsWith("/admin/login");
 
   useEffect(() => {
     if (isLoginPath) {
       setIsAuthorized(true);
+      setIsChecking(false);
       return;
     }
-    
+
     const stored = getAdminSession();
     if (!stored) {
+      setIsAuthorized(false);
+      setIsChecking(false);
       router.replace("/admin/login");
-    } else {
-      setIsAuthorized(true);
+      return;
     }
-  }, []);
+
+    setIsAuthorized(true);
+    setIsChecking(false);
+  }, [isLoginPath, router]);
 
   if (isLoginPath) {
     return <>{children}</>;
   }
 
-  if (!isAuthorized) {
-    return null;
+  if (isChecking || !isAuthorized) {
+    return (
+      <main className="page-shell admin-dashboard-shell">
+        <div className="container auth-card">
+          <p className="copy-small">Checking admin access…</p>
+        </div>
+      </main>
+    );
   }
 
   return (
