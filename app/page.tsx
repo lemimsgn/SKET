@@ -99,36 +99,34 @@ function PromoSlider() {
       });
     };
 
-    applySlide(0);
+    applySlide(index);
 
     const timer = window.setInterval(() => {
-      setIndex((prevIndex) => {
-        const nextIndex = (prevIndex + 1) % cards.length;
-        applySlide(nextIndex);
-        return nextIndex;
-      });
+      setIndex((prevIndex) => (prevIndex + 1) % cards.length);
     }, 5000);
 
     return () => window.clearInterval(timer);
-  }, []);
+  }, [index]);
 
-  const handleDotClick = (nextIndex: number) => {
-    setIndex(nextIndex);
-
+  useEffect(() => {
     const cards = Array.from(trackRef.current?.children ?? []) as HTMLElement[];
     const dots = Array.from(document.querySelectorAll(".promo-dot")) as HTMLElement[];
 
-    if (!trackRef.current || !cards.length) return;
+    if (!cards.length || !trackRef.current) return;
 
-    trackRef.current.style.transform = `translateX(-${nextIndex * 100}%)`;
+    trackRef.current.style.transform = `translateX(-${index * 100}%)`;
 
     cards.forEach((card, cardIndex) => {
-      card.classList.toggle("active", cardIndex === nextIndex);
+      card.classList.toggle("active", cardIndex === index);
     });
 
     dots.forEach((dot, dotIndex) => {
-      dot.classList.toggle("active", dotIndex === nextIndex);
+      dot.classList.toggle("active", dotIndex === index);
     });
+  }, [index]);
+
+  const handleDotClick = (nextIndex: number) => {
+    setIndex(nextIndex);
   };
 
   return (

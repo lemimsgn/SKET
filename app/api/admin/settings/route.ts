@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     const data = settingsDoc.exists ? settingsDoc.data() : null;
 
     return NextResponse.json({
-      registrationFee: data?.registrationFee ?? 1000,
+      registrationFee: data?.registrationFee ?? 3000,
       accountNumber: data?.accountNumber || "1000686058477",
       registrationTelegramLink: data?.registrationTelegramLink || "https://t.me/leonmsgn",
       forgotPasswordTelegramLink: data?.forgotPasswordTelegramLink || "https://t.me/leonmsgn",
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const registrationFee = Number(body.registrationFee ?? 1000);
+    const registrationFee = Number(body.registrationFee ?? 3000);
     const accountNumber = String(body.accountNumber ?? "").trim();
     let registrationTelegramLink = String(body.registrationTelegramLink ?? "").trim();
     let forgotPasswordTelegramLink = String(body.forgotPasswordTelegramLink ?? "").trim();
