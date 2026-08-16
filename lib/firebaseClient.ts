@@ -11,17 +11,12 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
 };
 
-const canInitialize = Boolean(
-  firebaseConfig.apiKey &&
-    firebaseConfig.authDomain &&
-    firebaseConfig.projectId
-);
-
+const canInitialize = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId);
 if (canInitialize && !getApps().length) {
   try {
     initializeApp(firebaseConfig);
   } catch (e) {
-    console.error("Firebase client initialization failed:", e);
+    // silent - dev without firebase configured
   }
 }
 

@@ -1,8 +1,5 @@
-
 import { NextResponse } from "next/server";
 import { db, firebaseAdminInitError as rawFirebaseAdminInitError } from "../../../lib/firebaseAdmin";
-import { requireUserAuth } from "../../../lib/userAuth";
-import { isValidPhoneId } from "../../../lib/phoneValidation";
 
 const firebaseAdminInitError = rawFirebaseAdminInitError as Error | null;
 
@@ -14,44 +11,12 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const referralCode = searchParams.get("referralCode") || searchParams.get("referralNumber");
-    let phoneNumber = searchParams.get("phone")?.trim();
+    const phoneNumber = searchParams.get("phone");
     const rawLimit = Number(searchParams.get("limit") || "20");
     const limit = Math.min(Math.max(Number.isFinite(rawLimit) ? rawLimit : 20, 1), 50);
 
     const allInvites: any[] = [];
     let inviter: any = null;
-
-    // require authenticated caller and ensure they are requesting their own data
-    const auth = await requireUserAuth(request as any);
-    if (!auth.ok) return auth.response;
-    const callerPhone = auth.phone || auth.uid;
-
-    if (!callerPhone || !isValidPhoneId(String(callerPhone))) {
-      return NextResponse.json({ error: "Authenticated phone number is invalid." }, { status: 401 });
-    }
-
-    if (!phoneNumber) {
-      phoneNumber = String(callerPhone);
-    }
-
-    if (phoneNumber !== String(callerPhone)) {
-      return NextResponse.json({ error: "Forbidden." }, { status: 403 });
-    }
-
-    if (referralCode) {
-      // ensure the referralCode belongs to caller
-      if (!isValidPhoneId(callerPhone)) {
-        return NextResponse.json({ error: "Forbidden." }, { status: 403 });
-      }
-      const meSnap = await db.collection("users").doc(String(callerPhone)).get();
-      if (!meSnap.exists) return NextResponse.json({ error: "User not found." }, { status: 404 });
-      const me = meSnap.data() || {};
-      const myReferralNumber = String(me.referralNumber || "");
-      const myReferralCode = String(me.referralCode || "");
-      if (String(referralCode) !== myReferralNumber && String(referralCode) !== myReferralCode) {
-        return NextResponse.json({ error: "Forbidden." }, { status: 403 });
-      }
-    }
 
     // Helper to map doc to lightweight invite
     const mapDoc = (doc: any) => {

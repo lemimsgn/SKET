@@ -42,14 +42,14 @@ export default function SignupPage() {
       setReferralChecking(true);
       setReferralLookupError("");
       try {
-        const response = await fetch(`/api/referrals/lookup?referralCode=${encodeURIComponent(referralCode.trim().toUpperCase())}`, {
+        const response = await fetch(`/api/referral-invites?referralCode=${encodeURIComponent(referralCode.trim().toUpperCase())}`, {
           signal: controller.signal,
         });
         if (!response.ok) {
           throw new Error("Referral lookup failed.");
         }
         const data = await response.json();
-        const inviter = data.inviter || null;
+        const inviter = data.inviter || (Array.isArray(data.invites) && data.invites.length > 0 ? data.invites[0] : null);
         if (inviter) {
           setReferralUserName(`${inviter.firstName || ""} ${inviter.lastName || ""}`.trim());
           setReferralLookupError("");
@@ -98,8 +98,8 @@ export default function SignupPage() {
       return;
     }
 
-    if (password.trim().length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (!/^\d{6,}$/.test(password.trim())) {
+      setError("Password must be at least 6 digits.");
       return;
     }
 
@@ -135,6 +135,7 @@ export default function SignupPage() {
         throw new Error(data.error || "Connection error. Please try again later.");
       }
 
+      window.localStorage.setItem("sket-current-user", data.phone);
       setRegistered(true);
       setTimeout(() => (window.location.href = "/dashboard"), 300);
     } catch (err: any) {
@@ -197,14 +198,16 @@ export default function SignupPage() {
                   <h2 className="subheading">Security</h2>
                   <div className="field-grid">
                     <div className="field-group">
-                      <label htmlFor="signupPassword">Password (min 8 characters)</label>
+                      <label htmlFor="signupPassword">Password (min 6 digits)</label>
                       <input
                         id="signupPassword"
                         className="input-field"
+                        inputMode="numeric"
+                        maxLength={10}
                         type={showPassword ? "text" : "password"}
                         value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        placeholder="Enter a password (min 8 characters)"
+                        onChange={(event) => setPassword(event.target.value.replace(/\D/g, "").slice(0, 10))}
+                        placeholder="Enter at least 6 digits"
                         required
                       />
                     </div>
@@ -213,9 +216,11 @@ export default function SignupPage() {
                       <input
                         id="confirmPassword"
                         className="input-field"
+                        inputMode="numeric"
+                        maxLength={10}
                         type={showPassword ? "text" : "password"}
                         value={confirmPassword}
-                        onChange={(event) => setConfirmPassword(event.target.value)}
+                        onChange={(event) => setConfirmPassword(event.target.value.replace(/\D/g, "").slice(0, 10))}
                         placeholder="Repeat your password"
                         required
                       />

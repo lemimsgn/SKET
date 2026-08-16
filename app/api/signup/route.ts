@@ -1,10 +1,6 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { db, firebaseAdminInitError as rawFirebaseAdminInitError } from "../../../lib/firebaseAdmin";
-import { validatePassword } from "../../../lib/passwordPolicy";
-import { isValidPhoneId } from "../../../lib/phoneValidation";
-import { appendNotification } from "../../../lib/notifications";
-import { checkLimit, getRequestIp, recordFailure, recordSuccess } from "../../../lib/rateLimit";
 
 const firebaseAdminInitError = rawFirebaseAdminInitError as Error | null;
 
@@ -13,31 +9,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: firebaseAdminInitError?.message || "Firebase Admin is not initialized." }, { status: 500 });
   }
 
+  if (!db) {
+    return NextResponse.json({ error: "Firebase Admin is not initialized." }, { status: 500 });
+  }
+
   try {
     const body = await request.json();
     const firstName = String(body.firstName || "").trim();
     const lastName = String(body.lastName || "").trim();
-    const rawPhone = String(body.phone || "").trim();
-    const phone = isValidPhoneId(rawPhone) ? rawPhone : "";
+    const phone = String(body.phone || "").trim();
     const password = String(body.password || "");
     const referralCode = String(body.referralCode || "").trim().toUpperCase();
-    const ip = getRequestIp(request);
-
-    const allowSignup = await checkLimit("auth:signup", ip, phone || undefined);
-    if (!allowSignup.allowed) {
-      return NextResponse.json(
-        { error: "Too many signup attempts. Try again later." },
-        { status: 429, headers: { "Retry-After": String(allowSignup.retryAfter) } }
-      );
-    }
 
     if (!firstName || !lastName || !phone || !password) {
-      await recordFailure("auth:signup", ip, phone || undefined);
       return NextResponse.json({ error: "Please complete all required fields." }, { status: 400 });
     }
 
     if (firstName.length > 15 || !/^[A-Za-z]+$/.test(firstName)) {
-      await recordFailure("auth:signup", ip, phone);
       return NextResponse.json({ error: "First name must be letters only and max 15 characters." }, { status: 400 });
     }
 
@@ -45,28 +33,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Last name must be letters only and max 15 characters." }, { status: 400 });
     }
 
-    const passCheck = validatePassword(password.trim());
-    if (!passCheck.ok) {
-      await recordFailure("auth:signup", ip, phone);
-      return NextResponse.json({ error: passCheck.message }, { status: 400 });
+    if (!/^(09|07)\d{8}$/.test(phone)) {
+      return NextResponse.json({ error: "Phone number must start with 09 or 07 and be exactly 10 digits." }, { status: 400 });
+    }
+
+    if (!/^\d{6,}$/.test(password.trim())) {
+      return NextResponse.json({ error: "Password must be at least 6 digits." }, { status: 400 });
     }
 
     if (referralCode && !/^[A-Z]{2}\d{4}$/.test(referralCode)) {
-      await recordFailure("auth:signup", ip, phone);
       return NextResponse.json({ error: "Referral code must be 2 letters followed by 4 digits, e.g. AB1234." }, { status: 400 });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
     const bannedSnap = await db.collection("bannedUsers").doc(phone).get();
     if (bannedSnap.exists) {
-      await recordFailure("auth:signup", ip, phone);
       return NextResponse.json({ error: "This phone number is banned and cannot register.", banned: true }, { status: 403 });
-    }
-
-    const existingByPhone = await db.collection("users").where("phone", "==", phone).limit(1).get();
-    if (!existingByPhone.empty) {
-      await recordFailure("auth:signup", ip, phone);
-      return NextResponse.json({ error: "An account with this phone number already exists." }, { status: 409 });
     }
 
     const generateReferralCode = () => {
@@ -75,21 +57,11 @@ export async function POST(request: Request) {
       return `${letters}${digits}`;
     };
 
-    let newUserReferralCode = "";
-    for (let attempt = 0; attempt < 20; attempt += 1) {
-      const candidateCode = generateReferralCode();
-      const existingCode = await db.collection("users").where("referralCode", "==", candidateCode).limit(1).get();
-      if (existingCode.empty) {
-        newUserReferralCode = candidateCode;
-        break;
-      }
-    }
-    if (!newUserReferralCode) {
-      await recordFailure("auth:signup", ip, phone);
-      return NextResponse.json(
-        { error: "Unable to generate a unique referral code right now. Please try again." },
-        { status: 503 }
-      );
+    let newUserReferralCode = generateReferralCode();
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      const existing = await db.collection("users").where("referralCode", "==", newUserReferralCode).limit(1).get();
+      if (existing.empty) break;
+      newUserReferralCode = generateReferralCode();
     }
 
     const userRef = db.collection("users").doc(phone);
@@ -148,28 +120,26 @@ export async function POST(request: Request) {
         approvedAt: null,
         lastLogin: null,
       });
+
+      if (inviterRef && inviter) {
+        const inviterData = inviter.data() || {};
+        const notifications = Array.isArray(inviterData.notifications) ? inviterData.notifications : [];
+        transaction.update(inviterRef, {
+          notifications: [
+            ...notifications,
+            {
+              type: "referral",
+              message: `${firstName} ${lastName} joined using your referral number. Their account is pending approval.`,
+              createdAt: new Date(),
+              read: false,
+            },
+          ],
+        });
+      }
     });
 
-    // Notify inviter outside of the transaction so notification failures
-    // don't abort the signup. This keeps the user creation robust.
-    if (inviterRef) {
-      try {
-        await appendNotification(inviterRef, {
-          type: "referral",
-          message: `${firstName} ${lastName} joined using your referral number. Their account is pending approval.`,
-          createdAt: new Date(),
-          read: false,
-        }, 100);
-      } catch (e) {
-        console.warn("appendNotification (post-signup) failed:", e);
-      }
-    }
-
-    await recordSuccess("auth:signup", ip, phone);
     return NextResponse.json({ success: true, phone });
   } catch (error: any) {
-    console.error("signup error:", error);
-    await recordFailure("auth:signup", getRequestIp(request), "");
-    return NextResponse.json({ error: "Something went wrong, please try again." }, { status: 500 });
+    return NextResponse.json({ error: error.message || String(error) }, { status: 500 });
   }
 }
