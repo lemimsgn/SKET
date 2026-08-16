@@ -21,8 +21,7 @@ const getStoredReferralCode = () => {
   }
 };
 
-const buildReferralShareText = (referralCode?: string) => {
-  const code = (referralCode || getStoredReferralCode() || "YOUR_REFERRAL_CODE").trim();
+const buildReferralShareText = () => {
   return [
     "✨ Join SKET and earn with referrals! ✨",
     "",
@@ -31,17 +30,14 @@ const buildReferralShareText = (referralCode?: string) => {
     "💸 3. After that you get 1000 birr for each invite",
     "🚀 4. Become an agent of SKET and you will be paid monthly",
     "",
-    "🔑 Referral Code:",
-    `${code.toUpperCase()}`,
-    "",
     `🌐 Web link: ${APP_SHARE_URL}`,
     "",
     "✅ Sign up today and start earning!",
   ].join("\n");
 };
 
-const handlePromoShare = async (referralCode?: string) => {
-  const shareText = buildReferralShareText(referralCode);
+const handlePromoShare = async () => {
+  const shareText = buildReferralShareText();
 
   try {
     if (typeof navigator !== "undefined" && navigator.share) {
@@ -89,10 +85,6 @@ function PromoSlider() {
 
     if (!cards.length) return;
 
-    if (trackRef.current) {
-      trackRef.current.style.transform = "translateX(0%)";
-    }
-
     const goTo = (nextIndex: number) => {
       setIndex(nextIndex);
       if (trackRef.current) {
@@ -108,17 +100,17 @@ function PromoSlider() {
     };
 
     const timer = setInterval(() => {
-      const nextIndex = (index + 1) % cards.length;
-      goTo(nextIndex);
+      setIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % cards.length;
+        goTo(nextIndex);
+        return nextIndex;
+      });
     }, 5000);
 
-    const firstCard = cards[0];
-    if (firstCard) {
-      firstCard.classList.add("active");
-    }
+    goTo(0);
 
     return () => clearInterval(timer);
-  }, [index]);
+  }, []);
 
   const handleDotClick = (nextIndex: number) => {
     setIndex(nextIndex);
