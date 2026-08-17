@@ -145,9 +145,15 @@ export default function DashboardPage() {
 
   const getTimeRemaining = (createdAtValue: any) => {
     if (!createdAtValue) return 48 * 60 * 60 * 1000;
-    const date = typeof createdAtValue.toDate === "function" ? createdAtValue.toDate() : new Date(createdAtValue);
-    const expiryMs = date.getTime() + 48 * 60 * 60 * 1000;
-    return Math.max(0, expiryMs - Date.now());
+    try {
+      const date = typeof createdAtValue.toDate === "function" ? createdAtValue.toDate() : new Date(createdAtValue);
+      const dateTime = date.getTime();
+      if (isNaN(dateTime)) return 48 * 60 * 60 * 1000;
+      const expiryMs = dateTime + 48 * 60 * 60 * 1000;
+      return Math.max(0, expiryMs - Date.now());
+    } catch {
+      return 48 * 60 * 60 * 1000;
+    }
   };
 
   useEffect(() => {
@@ -158,6 +164,10 @@ export default function DashboardPage() {
 
     const updateCountdown = () => {
       const remainingMs = getTimeRemaining(user.createdAt);
+      if (isNaN(remainingMs)) {
+        setCountdown({ hours: "48", minutes: "00", seconds: "00" });
+        return;
+      }
       const totalSeconds = Math.max(0, Math.floor(remainingMs / 1000));
       const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
       const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
