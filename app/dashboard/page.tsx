@@ -147,8 +147,22 @@ export default function DashboardPage() {
   const getTimeRemaining = (createdAtValue: any) => {
     if (!createdAtValue) return 48 * 60 * 60 * 1000;
     try {
-      const date = typeof createdAtValue.toDate === "function" ? createdAtValue.toDate() : new Date(createdAtValue);
-      const dateTime = date.getTime();
+      let dateTime: number;
+      
+      // Handle Firestore Timestamp serialized format { _seconds, _nanoseconds }
+      if (createdAtValue._seconds !== undefined) {
+        dateTime = createdAtValue._seconds * 1000;
+      } 
+      // Handle Firestore Timestamp object with toDate method
+      else if (typeof createdAtValue.toDate === "function") {
+        dateTime = createdAtValue.toDate().getTime();
+      }
+      // Handle string or number
+      else {
+        const date = new Date(createdAtValue);
+        dateTime = date.getTime();
+      }
+      
       if (isNaN(dateTime)) return 48 * 60 * 60 * 1000;
       const expiryMs = dateTime + 48 * 60 * 60 * 1000;
       return Math.max(0, expiryMs - Date.now());
