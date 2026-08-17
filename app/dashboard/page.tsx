@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, useRef, type FormEvent } from "react";
 
 type UserRecord = {
   firstName: string;
@@ -83,6 +83,9 @@ export default function DashboardPage() {
   const [countdown, setCountdown] = useState({ hours: "48", minutes: "00", seconds: "00" });
   const [promoIndex, setPromoIndex] = useState(0);
 
+  // Use ref to track created date so timer doesn't restart on every user object change
+  const createdAtRef = useRef<any>(null);
+
   const applyPromoSlide = (nextIndex: number) => {
     const cards = document.querySelectorAll(".dashboard-promo-track .promo-card");
     const dots = document.querySelectorAll(".dashboard-promo-dots .promo-dot");
@@ -157,15 +160,23 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (user?.status !== "pending") {
+    if (user?.status === "pending" && user?.createdAt) {
+      createdAtRef.current = user.createdAt;
+    } else if (user?.status !== "pending") {
+      createdAtRef.current = null;
+    }
+  }, [user?.status, user?.createdAt]);
+
+  useEffect(() => {
+    if (!createdAtRef.current) {
       setCountdown({ hours: "48", minutes: "00", seconds: "00" });
       return;
     }
 
     const updateCountdown = () => {
-      const remainingMs = getTimeRemaining(user.createdAt);
-      if (isNaN(remainingMs)) {
-        setCountdown({ hours: "48", minutes: "00", seconds: "00" });
+      const remainingMs = getTimeRemaining(createdAtRef.current);
+      if (isNaN(remainingMs) || remainingMs < 0) {
+        setCountdown({ hours: "00", minutes: "00", seconds: "00" });
         return;
       }
       const totalSeconds = Math.max(0, Math.floor(remainingMs / 1000));
@@ -177,8 +188,12 @@ export default function DashboardPage() {
 
     updateCountdown();
     const timer = window.setInterval(updateCountdown, 1000);
-    return () => window.clearInterval(timer);
-  }, [user?.status, user?.createdAt]);
+    console.log("✓ Countdown timer started");
+    return () => {
+      window.clearInterval(timer);
+      console.log("✗ Countdown timer cleared");
+    };
+  }, []); // Empty dependency array - only run once
 
   const pendingCountdownCritical = user?.status === "pending" && Number(countdown.hours) <= 10 && Number(countdown.minutes) <= 59 && Number(countdown.seconds) <= 59;
 
