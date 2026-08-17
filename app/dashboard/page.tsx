@@ -82,9 +82,7 @@ export default function DashboardPage() {
   const [requestAgainLoading, setRequestAgainLoading] = useState(false);
   const [countdown, setCountdown] = useState({ hours: "48", minutes: "00", seconds: "00" });
   const [promoIndex, setPromoIndex] = useState(0);
-
-  // Use ref to track created date so timer doesn't restart on every user object change
-  const createdAtRef = useRef<any>(null);
+  const [timerActive, setTimerActive] = useState(false);
 
   const applyPromoSlide = (nextIndex: number) => {
     const cards = document.querySelectorAll(".dashboard-promo-track .promo-card");
@@ -160,40 +158,49 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (user?.status === "pending" && user?.createdAt) {
-      createdAtRef.current = user.createdAt;
-    } else if (user?.status !== "pending") {
-      createdAtRef.current = null;
-    }
-  }, [user?.status, user?.createdAt]);
-
-  useEffect(() => {
-    if (!createdAtRef.current) {
+    // Only start timer if user has pending status and createdAt is available
+    if (user?.status !== "pending" || !user?.createdAt) {
       setCountdown({ hours: "48", minutes: "00", seconds: "00" });
+      setTimerActive(false);
       return;
     }
 
+    setTimerActive(true);
+    console.log("🚀 Timer activated for user:", user?.firstName, "created:", user?.createdAt);
+
     const updateCountdown = () => {
-      const remainingMs = getTimeRemaining(createdAtRef.current);
+      const remainingMs = getTimeRemaining(user.createdAt);
+      
       if (isNaN(remainingMs) || remainingMs < 0) {
+        console.log("❌ Invalid remaining time:", remainingMs);
         setCountdown({ hours: "00", minutes: "00", seconds: "00" });
         return;
       }
+      
       const totalSeconds = Math.max(0, Math.floor(remainingMs / 1000));
       const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
       const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
       const seconds = String(totalSeconds % 60).padStart(2, "0");
+      
+      // Log every 10 seconds to verify it's updating
+      if (totalSeconds % 10 === 0) {
+        console.log(`⏰ Countdown: ${hours}:${minutes}:${seconds} (${totalSeconds}s remaining)`);
+      }
+      
       setCountdown({ hours, minutes, seconds });
     };
 
+    // Update immediately
     updateCountdown();
+    
+    // Update every second
     const timer = window.setInterval(updateCountdown, 1000);
-    console.log("✓ Countdown timer started");
+    
     return () => {
       window.clearInterval(timer);
-      console.log("✗ Countdown timer cleared");
+      console.log("🛑 Timer cleared");
     };
-  }, []); // Empty dependency array - only run once
+  }, [user?.status, user?.createdAt]);
 
   const pendingCountdownCritical = user?.status === "pending" && Number(countdown.hours) <= 10 && Number(countdown.minutes) <= 59 && Number(countdown.seconds) <= 59;
 
