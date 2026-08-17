@@ -1232,6 +1232,10 @@ export default function DashboardPage() {
                       {canShareReferral ? "Share" : "Locked"}
                     </button>
                   </div>
+                  <div className="referral-warning" role="alert">
+                    <span className="referral-warning-icon">⚠️</span>
+                    <span>you will not be paid if user sign up without your referral code</span>
+                  </div>
                 </div>
               </div>
               {copiedMessage && <div className="toast-message">Referral code copied</div>}
