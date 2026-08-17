@@ -27,8 +27,6 @@ export async function GET(request: Request) {
       usersQuery = usersQuery.where("status", "==", status);
     }
 
-    usersQuery = usersQuery.orderBy("createdAt", "desc");
-
     const snapshot = await usersQuery.get();
     let users = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
 
