@@ -27,8 +27,23 @@ export async function GET(request: Request) {
       usersQuery = usersQuery.where("status", "==", status);
     }
 
+    usersQuery = usersQuery.orderBy("createdAt", "desc");
+
     const snapshot = await usersQuery.get();
     let users = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+
+    users = users.sort((a: any, b: any) => {
+      const toTime = (value: any) => {
+        if (!value) return 0;
+        if (typeof value.toDate === "function") {
+          return value.toDate().getTime();
+        }
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+      };
+
+      return toTime(b.createdAt) - toTime(a.createdAt);
+    });
 
     if (searchTerm) {
       users = users.filter((user: any) => {
