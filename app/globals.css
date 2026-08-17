@@ -3651,6 +3651,67 @@ img {
   z-index: 1;
 }
 
+.pending-expiry-card {
+  margin-bottom: 18px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 18px;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.pending-expiry-card.critical {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.22);
+}
+
+.pending-expiry-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.pending-expiry-icon {
+  font-size: 16px;
+}
+
+.pending-expiry-text {
+  margin: 0 0 10px 0;
+  color: #4b5563;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.pending-expiry-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #b45309;
+  background: #fff7ed;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.pending-expiry-timer.critical {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.pending-expiry-timer span {
+  display: inline-flex;
+  min-width: 26px;
+  justify-content: center;
+}
+
 .approval-detail-group {
   display: flex;
   justify-content: space-between;

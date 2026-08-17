@@ -4,6 +4,34 @@ import { requireUserAuth } from "../../../lib/userAuth";
 import { isValidPhoneId } from "../../../lib/phoneValidation";
 
 const firebaseAdminInitError = rawFirebaseAdminInitError as Error | null;
+const PENDING_ACCOUNT_TTL_MS = 48 * 60 * 60 * 1000;
+
+function toDateValue(value: any): Date | null {
+  if (!value) return null;
+  if (typeof value.toDate === "function") return value.toDate();
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+async function deleteUserAndRelatedData(userId: string, phone: string, uid?: string) {
+  if (!db) return;
+
+  const deleteByField = async (collectionName: string, fieldName: string, value: string) => {
+    const snapshot = await db!.collection(collectionName).where(fieldName, "==", value).limit(200).get();
+    if (snapshot.empty) return;
+    const batch = db!.batch();
+    snapshot.docs.forEach((doc: any) => batch.delete(doc.ref));
+    await batch.commit();
+  };
+
+  await deleteByField("withdrawRequests", "userId", userId);
+  await deleteByField("withdrawRequests", "phone", phone);
+  await deleteByField("walletTransactions", "userId", userId);
+  await deleteByField("walletTransactions", "phone", phone);
+
+  const userRef = db.collection("users").doc(userId);
+  await userRef.delete();
+}
 
 export async function GET(request: NextRequest) {
   if (firebaseAdminInitError || !db) {
@@ -39,6 +67,16 @@ export async function GET(request: NextRequest) {
     }
 
     const userData = userResult.snap.data() || {};
+    const createdAt = toDateValue(userData.createdAt);
+    const isPendingExpired =
+      String(userData.status || (userData.approved ? "approved" : "pending")).toLowerCase() === "pending" &&
+      createdAt &&
+      Date.now() - createdAt.getTime() >= PENDING_ACCOUNT_TTL_MS;
+
+    if (isPendingExpired) {
+      await deleteUserAndRelatedData(userResult.snap.id, String(userData.phone || requestedPhone), String(userData.uid || ""));
+      return NextResponse.json({ error: "Your pending account has expired and was deleted automatically." }, { status: 410 });
+    }
 
     const settingsRef = db.collection("settings").doc("referralRewards");
     const settingsSnapshot = await settingsRef.get();
@@ -59,6 +97,7 @@ export async function GET(request: NextRequest) {
         approved: userData.approved ?? false,
         status: userData.status || (userData.approved ? "approved" : "pending"),
         rejectionCount: Number(userData.rejectionCount || 0),
+        createdAt: userData.createdAt || null,
         walletBalance: userData.walletBalance ?? 0,
         totalEarned: userData.totalEarned ?? 0,
         totalWithdrawn: userData.totalWithdrawn ?? 0,

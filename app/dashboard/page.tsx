@@ -22,6 +22,7 @@ type UserRecord = {
   registrationTelegramLink?: string;
   securityQuestionsExist?: boolean;
   rejectionCount?: number;
+  createdAt?: any;
 };
 
 type ReferralInvite = {
@@ -79,6 +80,7 @@ export default function DashboardPage() {
   const [requestAgainMessage, setRequestAgainMessage] = useState("");
   const [requestAgainStatus, setRequestAgainStatus] = useState<"idle" | "success" | "error">("idle");
   const [requestAgainLoading, setRequestAgainLoading] = useState(false);
+  const [countdown, setCountdown] = useState({ hours: "48", minutes: "00", seconds: "00" });
   const [promoIndex, setPromoIndex] = useState(0);
 
   const applyPromoSlide = (nextIndex: number) => {
@@ -140,6 +142,35 @@ export default function DashboardPage() {
   };
 
   const registrationFeeText = `registration fee\n${registrationFee} ETB\naccount number ${registrationAccountNumber}`;
+
+  const getTimeRemaining = (createdAtValue: any) => {
+    if (!createdAtValue) return 48 * 60 * 60 * 1000;
+    const date = typeof createdAtValue.toDate === "function" ? createdAtValue.toDate() : new Date(createdAtValue);
+    const expiryMs = date.getTime() + 48 * 60 * 60 * 1000;
+    return Math.max(0, expiryMs - Date.now());
+  };
+
+  useEffect(() => {
+    if (user?.status !== "pending") {
+      setCountdown({ hours: "48", minutes: "00", seconds: "00" });
+      return;
+    }
+
+    const updateCountdown = () => {
+      const remainingMs = getTimeRemaining(user.createdAt);
+      const totalSeconds = Math.max(0, Math.floor(remainingMs / 1000));
+      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+      const seconds = String(totalSeconds % 60).padStart(2, "0");
+      setCountdown({ hours, minutes, seconds });
+    };
+
+    updateCountdown();
+    const timer = window.setInterval(updateCountdown, 1000);
+    return () => window.clearInterval(timer);
+  }, [user?.status, user?.createdAt]);
+
+  const pendingCountdownCritical = user?.status === "pending" && Number(countdown.hours) <= 10 && Number(countdown.minutes) <= 59 && Number(countdown.seconds) <= 59;
 
   const handleCopyAccountNumber = async () => {
     try {
@@ -1073,6 +1104,20 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="approval-body">
+                  {user.status === "pending" && (
+                    <div className={`pending-expiry-card ${pendingCountdownCritical ? "critical" : ""}`}>
+                      <div className="pending-expiry-header">
+                        <span className="pending-expiry-icon">⏳</span>
+                        <strong>Payment verification countdown</strong>
+                      </div>
+                      <p className="pending-expiry-text">Your account will be deleted automatically if you do not verify your payment on time.</p>
+                      <div className={`pending-expiry-timer ${pendingCountdownCritical ? "critical" : ""}`}>
+                        <span>{countdown.hours}</span>h
+                        <span>{countdown.minutes}</span>m
+                        <span>{countdown.seconds}</span>s
+                      </div>
+                    </div>
+                  )}
                   <p className="approval-text">
                     {user.status === "rejected"
                       ? "Your registration was rejected. Please pay the registration fee and send a payment screenshot again to Telegram."

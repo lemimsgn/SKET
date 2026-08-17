@@ -43,6 +43,7 @@ export async function POST(request: Request) {
       }, 100, transaction);
       transaction.update(userRef, {
         status: "pending",
+        createdAt: new Date(),
         updatedAt: new Date(),
         rejectionReason: null,
         requestedAgainAt: new Date(),

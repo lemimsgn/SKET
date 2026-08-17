@@ -19,6 +19,34 @@ export async function GET(request: Request) {
 
   try {
     const usersRef = db.collection("users");
+    const pendingSnapshot = await usersRef.where("status", "==", "pending").get();
+    const nowMs = Date.now();
+
+    for (const doc of pendingSnapshot.docs) {
+      const data = doc.data() || {};
+      const createdAt = data.createdAt && typeof data.createdAt.toDate === "function" ? data.createdAt.toDate() : new Date(data.createdAt || 0);
+      if (Number.isNaN(createdAt.getTime())) continue;
+      if (nowMs - createdAt.getTime() >= 48 * 60 * 60 * 1000) {
+        const phone = String(data.phone || "");
+        const deleteByField = async (collectionName: string, fieldName: string, value: string) => {
+          if (!db) return;
+          const child = await db.collection(collectionName).where(fieldName, "==", value).limit(200).get();
+          if (child.empty) return;
+          const batch = db.batch();
+          child.docs.forEach((entry: any) => batch.delete(entry.ref));
+          await batch.commit();
+        };
+
+        await deleteByField("withdrawRequests", "userId", doc.id);
+        await deleteByField("withdrawRequests", "phone", phone);
+        await deleteByField("walletTransactions", "userId", doc.id);
+        await deleteByField("walletTransactions", "phone", phone);
+        if (db) {
+          await db.collection("users").doc(doc.id).delete();
+        }
+      }
+    }
+
     const pendingQuery = usersRef.where("status", "==", "pending");
     const approvedQuery = usersRef.where("status", "==", "approved");
 
